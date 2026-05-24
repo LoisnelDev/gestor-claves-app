@@ -23,8 +23,6 @@ if platform == 'android':
     PythonActivity = autoclass('org.kivy.android.PythonActivity')
     Intent = autoclass('android.content.Intent')
     Context = autoclass('android.content.Context')
-    # Añadimos las clases de Biometría modernas recomendadas para Android 15
-    BiometricManager = autoclass('androidx.biometrics.BiometricManager') 
     KeyguardManager = autoclass('android.app.KeyguardManager')
 
 # --- CONFIGURACIÓN DE SEGURIDAD ---
@@ -67,16 +65,15 @@ class GestorApp(App):
         self.contenedor_principal = AnchorLayout(anchor_x='center', anchor_y='center')
         return self.pantalla_login()
 
-    # --- PUENTE NATIVO MEJORADO PARA ANDROID 15 (Biometría / Credenciales) ---
+    # --- PUENTE NATIVO SEGURO Y COMPATIBLE ---
     def autenticar_con_android(self):
-        """ Invoca el sistema de autenticación nativo asegurando compatibilidad con APIs modernas """
+        """ Invoca el sistema de autenticación nativo usando la API base sin dependencias externas """
         try:
             actividad_actual = PythonActivity.mActivity
             servicio_seguridad = actividad_actual.getSystemService(Context.KEYGUARD_SERVICE)
             gestor_seguridad = cast('android.app.KeyguardManager', servicio_seguridad)
             
-            if gestor_seguridad.isDeviceSecure():
-                # Forzar la ejecución en el hilo principal de la UI de Android para evitar bloqueos de seguridad
+            if gestor_seguridad and gestor_seguridad.isDeviceSecure():
                 intent_autenticacion = gestor_seguridad.createConfirmDeviceCredentialIntent(
                     "Gestor de Claves", 
                     "Verifica tu identidad usando la huella digital o el PIN de tu celular"
@@ -84,19 +81,18 @@ class GestorApp(App):
                 if intent_autenticacion:
                     PythonActivity.bind(on_activity_result=self.procesar_respuesta_biometrica)
                     actividad_actual.startActivityForResult(intent_autenticacion, 1001)
-                else:
-                    self.mostrar_menu()
-            else:
-                self.mostrar_menu()
+                    return
+            
+            # Si no tiene bloqueo configurado, entra al menú principal directo
+            self.mostrar_menu()
         except Exception as e:
-            print(f"Error en API biométrica nativa: {e}")
-            # Si la API restrictiva de Android 15 bloquea el Intent, permitimos acceso controlado por UI
-            self.lbl_info.text = "Sensor en espera. Ingrese PIN manual."
+            print(f"Error al llamar la API nativa: {e}")
+            self.lbl_info.text = "Sensor en espera. Use PIN manual."
             self.lbl_info.color = (1, 0.6, 0, 1)
 
     def procesar_respuesta_biometrica(self, request_code, result_code, intent_data):
         if request_code == 1001:
-            if result_code == -1: # RESULT_OK
+            if result_code == -1: # RESULT_OK nativo
                 self.ultimo_toque = time.time()
                 self.datos = self.cargar_datos()
                 self.mostrar_menu()
@@ -185,7 +181,6 @@ class GestorApp(App):
     def mostrar_menu(self, filtro=""):
         self.contenedor_principal.clear_widgets()
         
-        # FIX UX: Si estamos en Android, dejamos espacio abajo (65dp) para que la barra de botones no tape la UI
         margen_inferior = '65dp' if platform == 'android' else '10dp'
         menu_layout = BoxLayout(orientation='vertical', padding=['10dp', '10dp', '10dp', margen_inferior], spacing='10dp')
         
@@ -233,7 +228,6 @@ class GestorApp(App):
         self.contenedor_principal.clear_widgets()
         scroll_editor = ScrollView(do_scroll_x=False)
         
-        # FIX UX: Aplicamos el margen de seguridad abajo también en el editor
         margen_inferior = '65dp' if platform == 'android' else '15dp'
         editor_layout = BoxLayout(orientation='vertical', padding=['15dp', '15dp', '15dp', margen_inferior], spacing='10dp', size_hint_y=None)
         editor_layout.bind(minimum_height=editor_layout.setter('height'))
