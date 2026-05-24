@@ -6,7 +6,7 @@
 [app]
 
 # (str) Title of your application
-title = Gestor de Claves
+title = GestorClaves
 #title = My Application
 
 # (str) Package name
@@ -52,7 +52,6 @@ version = 0.1
 #requirements = python3,kivy,cryptography
 #requirements = python3,kivy,cryptography==44.0.0
 requirements = python3,kivy,pycryptodome
-
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/data/presplash.png
 
@@ -109,16 +108,17 @@ fullscreen = 0
 # (list) Permissions
 # (See https://python-for-android.readthedocs.io/en/latest/buildoptions.html for all the supported syntaxes and properties)
 #android.permissions = android.permission.INTERNET, (name=android.permission.WRITE_EXTERNAL_STORAGE;maxSdkVersion=18)
-android.permissions = USE_BIOMETRIC, USE_FINGERPRINT
+#android.permissions = USE_BIOMETRIC, USE_FINGERPRINT
+android.permissions = android.permission.USE_BIOMETRIC, android.permission.USE_FINGERPRINT
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-#android.api = 33
+android.api = 35
 
 # (int) Minimum API your APK / AAB will support.
-#android.minapi = 24
+android.minapi = 26
 
 # (int) Android SDK version to use
 #android.sdk = 20

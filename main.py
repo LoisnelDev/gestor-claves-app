@@ -14,7 +14,8 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
 from kivy.graphics import Color, RoundedRectangle
 from kivy.clock import Clock 
-from Cryptodome.Cipher import AES
+from Crypto.Cipher import AES
+#from Cryptodome.Cipher import AES
 from kivy.utils import platform
 
 # Enlazar con las APIs de Java solo si estamos corriendo dentro de Android
