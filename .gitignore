@@ -1,3 +1,8 @@
 .buildozer/
-bin/
-*.spec.bak
+bin/*.apk
+build.log
+error.txt
+__pycache__/
+*.pyc
+*.pyo
+.env
