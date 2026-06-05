@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="biometric_error_prefix">Error de autenticación: %1$s</string>
+    <string name="biometric_no_hardware">Este dispositivo no tiene sensor biométrico</string>
+    <string name="biometric_none_enrolled">No hay huella o PIN configurado en el dispositivo</string>
+    <string name="biometric_unavailable">Autenticación biométrica no disponible</string>
+    <string name="dialog_biometric_subtitle">Usa tu huella dactilar o PIN del dispositivo</string>
+    <string name="dialog_biometric_title">Gestor de Claves</string>
+    <string name="dialog_btn_cancelar">CANCELAR</string>
+    <string name="dialog_btn_eliminar">ELIMINAR</string>
+    <string name="dialog_btn_no">NO</string>
+    <string name="dialog_btn_si">SÍ</string>
+    <string name="dialog_confirm_save_text">¿Deseas guardar los cambios para \"%1$s\"?</string>
+    <string name="dialog_confirm_title">Confirmar</string>
+    <string name="dialog_delete_text">¿Estás seguro de eliminar permanentemente \"%1$s\"? Esta acción no se puede deshacer.</string>
+    <string name="dialog_delete_title">⚠️ Eliminar clave</string>
+    <string name="editor_btn_copiar">Copiar</string>
+    <string name="editor_btn_copy_short">Copy</string>
+    <string name="editor_btn_guardar">GUARDAR</string>
+    <string name="editor_btn_modificar">MODIFICAR</string>
+    <string name="editor_btn_ocultar">Ocultar</string>
+    <string name="editor_btn_pegar">Pegar</string>
+    <string name="editor_btn_ver">Ver</string>
+    <string name="editor_btn_volver">VOLVER</string>
+    <string name="editor_label_extras_edit">EXTRAS (info adicional)</string>
+    <string name="editor_label_extras_view">EXTRAS</string>
+    <string name="editor_label_pass">PASS</string>
+    <string name="editor_label_sitio">SITIO</string>
+    <string name="editor_label_usuario">USUARIO</string>
+    <string name="editor_link_eliminar">🗑 Eliminar esta clave</string>
+    <string name="editor_title_nuevo">✏️ Nueva Clave</string>
+    <string name="login_btn">AUTENTICAR CON HUELLA / PIN</string>
+    <string name="login_subtitle">Verifica tu identidad para continuar</string>
+    <string name="login_title">🔐 Gestor de Claves</string>
+    <string name="menu_btn_nueva">+ NUEVA CLAVE</string>
+    <string name="menu_btn_salir">SALIR</string>
+    <string name="menu_empty_list">No hay claves guardadas.\nToca + NUEVA CLAVE para comenzar.</string>
+    <string name="menu_search_hint">🔍 Buscar sitio</string>
+    <string name="notification_channel_desc">Notificaciones de cierre por seguridad</string>
+    <string name="notification_channel_name">Seguridad de la App</string>
+    <string name="notification_text">Sesión cerrada automáticamente por inactividad.</string>
+    <string name="notification_title">⚠️ Gestor Cerrado</string>
+</resources>

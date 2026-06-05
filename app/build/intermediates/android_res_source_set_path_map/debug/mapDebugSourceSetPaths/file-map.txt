@@ -1,0 +1,8 @@
+com.loisnel.gestorclaves.app-pngs-0 /home/loisnel/AndroidStudioProjects/GestorClaves/app/build/generated/res/pngs/debug
+com.loisnel.gestorclaves.app-updated_navigation_xml-1 /home/loisnel/AndroidStudioProjects/GestorClaves/app/build/generated/updated_navigation_xml/debug
+com.loisnel.gestorclaves.app-packageDebugResources-2 /home/loisnel/AndroidStudioProjects/GestorClaves/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.loisnel.gestorclaves.app-packageDebugResources-3 /home/loisnel/AndroidStudioProjects/GestorClaves/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.loisnel.gestorclaves.app-debug-4 /home/loisnel/AndroidStudioProjects/GestorClaves/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.loisnel.gestorclaves.app-debug-5 /home/loisnel/AndroidStudioProjects/GestorClaves/app/src/debug/res
+com.loisnel.gestorclaves.app-main-6 /home/loisnel/AndroidStudioProjects/GestorClaves/app/src/main/res
+gradleHome-0 /home/loisnel/.gradle

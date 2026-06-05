@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">Password Manager</string>
+    <string name="biometric_error_prefix">Authentication error: %1$s</string>
+    <string name="biometric_no_hardware">This device does not have a biometric sensor</string>
+    <string name="biometric_none_enrolled">No fingerprint or PIN configured on this device</string>
+    <string name="biometric_unavailable">Biometric authentication unavailable</string>
+    <string name="dialog_biometric_subtitle">Use your fingerprint or device PIN</string>
+    <string name="dialog_biometric_title">Password Manager</string>
+    <string name="dialog_btn_cancelar">CANCEL</string>
+    <string name="dialog_btn_eliminar">DELETE</string>
+    <string name="dialog_btn_no">NO</string>
+    <string name="dialog_btn_si">YES</string>
+    <string name="dialog_confirm_save_text">Do you want to save changes for \"%1$s\"?</string>
+    <string name="dialog_confirm_title">Confirm</string>
+    <string name="dialog_delete_text">Are you sure you want to permanently delete \"%1$s\"? This action cannot be undone.</string>
+    <string name="dialog_delete_title">⚠️ Delete password</string>
+    <string name="editor_btn_copiar">Copy</string>
+    <string name="editor_btn_copy_short">Copy</string>
+    <string name="editor_btn_guardar">SAVE</string>
+    <string name="editor_btn_modificar">MODIFY</string>
+    <string name="editor_btn_ocultar">Hide</string>
+    <string name="editor_btn_pegar">Paste</string>
+    <string name="editor_btn_ver">Show</string>
+    <string name="editor_btn_volver">BACK</string>
+    <string name="editor_label_extras_edit">EXTRAS (additional info)</string>
+    <string name="editor_label_extras_view">EXTRAS</string>
+    <string name="editor_label_pass">PASS</string>
+    <string name="editor_label_sitio">SITE</string>
+    <string name="editor_label_usuario">USER</string>
+    <string name="editor_link_eliminar">🗑 Delete this password</string>
+    <string name="editor_title_nuevo">✏️ New Password</string>
+    <string name="login_btn">AUTHENTICATE WITH FINGERPRINT / PIN</string>
+    <string name="login_subtitle">Verify your identity to continue</string>
+    <string name="login_title">🔐 Password Manager</string>
+    <string name="menu_btn_nueva">+ NEW PASSWORD</string>
+    <string name="menu_btn_salir">LOGOUT</string>
+    <string name="menu_empty_list">No saved passwords.\nTap + NEW PASSWORD to start.</string>
+    <string name="menu_search_hint">🔍 Search site</string>
+    <string name="notification_channel_desc">Security timeout notifications</string>
+    <string name="notification_channel_name">App Security</string>
+    <string name="notification_text">Session automatically closed due to inactivity.</string>
+    <string name="notification_title">⚠️ Manager Locked</string>
+    <style name="Theme.GestorClaves" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
