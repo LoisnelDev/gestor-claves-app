@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="file" path="backup_local_invisible.dat" />
+
+    <exclude domain="sharedpref" path="gestor_claves_prefs.xml" />
+</full-backup-content>

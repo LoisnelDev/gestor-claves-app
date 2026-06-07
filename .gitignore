@@ -1,0 +1,22 @@
+# Android Studio
+.idea/
+*.iml
+.gradle/
+local.properties
+android.injected.signing.*
+
+# Build
+/build/
+/app/build/
+
+# APK firmados (no subir a repositorio público)
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Respaldo local de la app (datos de usuario)
+backup_local_invisible.dat
+
+# Google Services
+google-services.json
