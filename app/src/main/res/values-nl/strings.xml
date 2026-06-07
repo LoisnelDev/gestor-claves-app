@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wachtwoordbeheer</string>
+
+    <string name="notification_channel_name">App-beveiliging</string>
+    <string name="notification_channel_desc">Beveiligingsmeldingen bij time-out</string>
+    <string name="notification_title">⚠️ Beheerder vergrendeld</string>
+    <string name="notification_text">Sessie automatisch gesloten wegens inactiviteit.</string>
+
+    <string name="login_title">🔐 Wachtwoordbeheer</string>
+    <string name="login_subtitle">Verifieer uw identiteit om door te gaan</string>
+    <string name="login_btn">AUTHENTICEREN MET VINGERAFDRUK / PIN</string>
+
+    <string name="biometric_no_hardware">Dit apparaat heeft geen biometrische sensor</string>
+    <string name="biometric_none_enrolled">Geen vingerafdruk of PIN geconfigureerd op dit apparaat</string>
+    <string name="biometric_unavailable">Biometrische authenticatie niet beschikbaar</string>
+    <string name="biometric_error_prefix">Authenticatiefout: %1$s</string>
+
+    <string name="dialog_biometric_title">Wachtwoordbeheer</string>
+    <string name="dialog_biometric_subtitle">Gebruik uw vingerafdruk of apparaat-PIN</string>
+
+    <string name="menu_btn_salir">UITLOGGEN</string>
+    <string name="menu_search_hint">🔍 Site zoeken</string>
+    <string name="menu_empty_list">Geen opgeslagen wachtwoorden.\nTik op + NIEUW WACHTWOORD om te beginnen.</string>
+    <string name="menu_btn_nueva">+ NIEUW WACHTWOORD</string>
+    <string name="menu_no_results">Geen resultaten gevonden voor \"%1$s\"</string>
+
+    <string name="editor_title_nuevo">✏️ Nieuw wachtwoord</string>
+    <string name="editor_label_sitio">SITE</string>
+    <string name="editor_label_usuario">GEBRUIKER</string>
+    <string name="editor_label_pass">WACHTWOORD</string>
+    <string name="editor_label_extras_edit">EXTRA\'S (aanvullende info)</string>
+    <string name="editor_label_extras_view">EXTRA\'S</string>
+    <string name="editor_btn_ver">Tonen</string>
+    <string name="editor_btn_ocultar">Verbergen</string>
+    <string name="editor_btn_copiar">Kopiëren</string>
+    <string name="editor_btn_copy_short">Kopiëren</string>
+    <string name="editor_btn_pegar">Plakken</string>
+    <string name="editor_btn_volver">TERUG</string>
+    <string name="editor_btn_modificar">WIJZIGEN</string>
+    <string name="editor_btn_guardar">OPSLAAN</string>
+    <string name="editor_link_eliminar">🗑 Dit wachtwoord verwijderen</string>
+
+    <string name="dialog_confirm_title">Bevestigen</string>
+    <string name="dialog_confirm_save_text">Wilt u de wijzigingen voor \"%1$s\" opslaan?</string>
+    <string name="dialog_delete_title">⚠️ Wachtwoord verwijderen</string>
+    <string name="dialog_delete_text">Weet u zeker dat u \"%1$s\" permanent wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.</string>
+    <string name="dialog_btn_si">JA</string>
+    <string name="dialog_btn_no">NEE</string>
+    <string name="dialog_btn_eliminar">VERWIJDEREN</string>
+    <string name="dialog_btn_cancelar">ANNULEREN</string>
+</resources>

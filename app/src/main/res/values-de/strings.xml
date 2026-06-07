@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Passwort-Manager</string>
+
+    <string name="notification_channel_name">App-Sicherheit</string>
+    <string name="notification_channel_desc">Sicherheitsbenachrichtigungen bei Zeitüberschreitung</string>
+    <string name="notification_title">⚠️ Manager gesperrt</string>
+    <string name="notification_text">Sitzung wegen Inaktivität automatisch geschlossen.</string>
+
+    <string name="login_title">🔐 Passwort-Manager</string>
+    <string name="login_subtitle">Bestätigen Sie Ihre Identität, um fortzufahren</string>
+    <string name="login_btn">MIT FINGERABDRUCK / PIN AUTHENTIFIZIEREN</string>
+
+    <string name="biometric_no_hardware">Dieses Gerät hat keinen biometrischen Sensor</string>
+    <string name="biometric_none_enrolled">Kein Fingerabdruck oder PIN auf diesem Gerät konfiguriert</string>
+    <string name="biometric_unavailable">Biometrische Authentifizierung nicht verfügbar</string>
+    <string name="biometric_error_prefix">Authentifizierungsfehler: %1$s</string>
+
+    <string name="dialog_biometric_title">Passwort-Manager</string>
+    <string name="dialog_biometric_subtitle">Fingerabdruck oder Geräte-PIN verwenden</string>
+
+    <string name="menu_btn_salir">ABMELDEN</string>
+    <string name="menu_search_hint">🔍 Website suchen</string>
+    <string name="menu_empty_list">Keine gespeicherten Passwörter.\nTippen Sie auf + NEUES PASSWORT, um zu beginnen.</string>
+    <string name="menu_btn_nueva">+ NEUES PASSWORT</string>
+    <string name="menu_no_results">Keine Ergebnisse für \"%1$s\" gefunden</string>
+
+    <string name="editor_title_nuevo">✏️ Neues Passwort</string>
+    <string name="editor_label_sitio">WEBSITE</string>
+    <string name="editor_label_usuario">BENUTZER</string>
+    <string name="editor_label_pass">PASSWORT</string>
+    <string name="editor_label_extras_edit">EXTRAS (zusätzliche Info)</string>
+    <string name="editor_label_extras_view">EXTRAS</string>
+    <string name="editor_btn_ver">Anzeigen</string>
+    <string name="editor_btn_ocultar">Verbergen</string>
+    <string name="editor_btn_copiar">Kopieren</string>
+    <string name="editor_btn_copy_short">Kopieren</string>
+    <string name="editor_btn_pegar">Einfügen</string>
+    <string name="editor_btn_volver">ZURÜCK</string>
+    <string name="editor_btn_modificar">BEARBEITEN</string>
+    <string name="editor_btn_guardar">SPEICHERN</string>
+    <string name="editor_link_eliminar">🗑 Dieses Passwort löschen</string>
+
+    <string name="dialog_confirm_title">Bestätigen</string>
+    <string name="dialog_confirm_save_text">Möchten Sie die Änderungen für \"%1$s\" speichern?</string>
+    <string name="dialog_delete_title">⚠️ Passwort löschen</string>
+    <string name="dialog_delete_text">Sind Sie sicher, dass Sie \"%1$s\" dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.</string>
+    <string name="dialog_btn_si">JA</string>
+    <string name="dialog_btn_no">NEIN</string>
+    <string name="dialog_btn_eliminar">LÖSCHEN</string>
+    <string name="dialog_btn_cancelar">ABBRECHEN</string>
+</resources>
