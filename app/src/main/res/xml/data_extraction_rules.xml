@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
     <!--
-        ARQUITECTURA DE RECUPERACIÓN:
-        - backup_local_invisible.dat SE INCLUYE en cloud-backup y
-          device-transfer para recuperación en dos escenarios:
-          1. Desinstalación accidental (mismo dispositivo)
-          2. Migración a dispositivo nuevo via Google Backup
-        - SharedPreferences y databases SE EXCLUYEN: ligadas al
-          hardware del dispositivo original, irrecuperables en otro.
-        - disableIfNoEncryptionCapabilities="true": solo hace backup
-          si Google Drive puede garantizar cifrado end-to-end.
+        Solo incluimos el archivo de recuperación de emergencia.
+        Android automáticamente excluye los archivos no listados.
+        Las SharedPreferences encriptadas se omiten intencionalmente
+        porque están ligadas al hardware del dispositivo original.
+        disableIfNoEncryptionCapabilities garantiza cifrado en nube.
     -->
     <cloud-backup disableIfNoEncryptionCapabilities="true">
         <include domain="file" path="backup_local_invisible.dat" />
-        <exclude domain="sharedpref" path="gestor_claves_prefs.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="file" path="backup_local_invisible.dat" />
-        <exclude domain="sharedpref" path="gestor_claves_prefs.xml" />
     </device-transfer>
 </data-extraction-rules>
