@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gerenciador de senhas</string>
+
+    <!-- Notificações -->
+    <string name="notification_channel_name">Segurança do aplicativo</string>
+    <string name="notification_channel_desc">Notificações de segurança por tempo limite</string>
+    <string name="notification_title">⚠️ Gerenciador bloqueado</string>
+    <string name="notification_text">Sessão encerrada automaticamente por inatividade.</string>
+
+    <!-- Tela de login -->
+    <string name="login_title">🔐 Gerenciador de senhas</string>
+    <string name="login_subtitle">Verifique sua identidade para continuar</string>
+    <string name="login_btn">AUTENTICAR COM IMPRESSÃO DIGITAL / PIN</string>
+
+    <!-- Mensagens biométricas -->
+    <string name="biometric_no_hardware">Este dispositivo não possui sensor biométrico</string>
+    <string name="biometric_none_enrolled">Nenhuma impressão digital ou PIN configurado neste dispositivo</string>
+    <string name="biometric_unavailable">Autenticação biométrica não disponível</string>
+    <string name="biometric_error_prefix">Erro de autenticação: %1$s</string>
+
+    <!-- Diálogo biométrico -->
+    <string name="dialog_biometric_title">Gerenciador de senhas</string>
+    <string name="dialog_biometric_subtitle">Use sua impressão digital ou o PIN do dispositivo</string>
+
+    <!-- Tela do menu -->
+    <string name="menu_btn_salir">SAIR</string>
+    <string name="menu_search_hint">🔍 Pesquisar site</string>
+    <string name="menu_empty_list">Nenhuma senha salva.\nToque em + NOVA SENHA para começar.</string>
+    <string name="menu_btn_nueva">+ NOVA SENHA</string>
+    <string name="menu_no_results">Nenhum resultado encontrado para \"%1$s\"</string>
+
+    <!-- Tela do editor -->
+    <string name="editor_title_nuevo">✏️ Nova senha</string>
+    <string name="editor_label_sitio">SITE</string>
+    <string name="editor_label_usuario">USUÁRIO</string>
+    <string name="editor_label_pass">SENHA</string>
+    <string name="editor_label_extras_edit">EXTRAS (informações adicionais)</string>
+    <string name="editor_label_extras_view">EXTRAS</string>
+    <string name="editor_btn_ver">Mostrar</string>
+    <string name="editor_btn_ocultar">Ocultar</string>
+    <string name="editor_btn_copiar">Copiar</string>
+    <string name="editor_btn_copy_short">Copiar</string>
+    <string name="editor_btn_pegar">Colar</string>
+    <string name="editor_btn_volver">VOLTAR</string>
+    <string name="editor_btn_modificar">MODIFICAR</string>
+    <string name="editor_btn_guardar">SALVAR</string>
+    <string name="editor_link_eliminar">🗑 Excluir esta senha</string>
+
+    <!-- Diálogos de confirmação -->
+    <string name="dialog_confirm_title">Confirmar</string>
+    <string name="dialog_confirm_save_text">Deseja salvar as alterações para \"%1$s\"?</string>
+    <string name="dialog_delete_title">⚠️ Excluir senha</string>
+    <string name="dialog_delete_text">Tem certeza de que deseja excluir permanentemente \"%1$s\"? Esta ação não pode ser desfeita.</string>
+    <string name="dialog_btn_si">SIM</string>
+    <string name="dialog_btn_no">NÃO</string>
+    <string name="dialog_btn_eliminar">EXCLUIR</string>
+    <string name="dialog_btn_cancelar">CANCELAR</string>
+</resources>

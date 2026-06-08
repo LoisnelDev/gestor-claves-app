@@ -2,29 +2,35 @@
 <resources>
     <string name="app_name">Passwort-Manager</string>
 
+    <!-- Benachrichtigungen -->
     <string name="notification_channel_name">App-Sicherheit</string>
     <string name="notification_channel_desc">Sicherheitsbenachrichtigungen bei Zeitüberschreitung</string>
     <string name="notification_title">⚠️ Manager gesperrt</string>
     <string name="notification_text">Sitzung wegen Inaktivität automatisch geschlossen.</string>
 
+    <!-- Anmeldebildschirm -->
     <string name="login_title">🔐 Passwort-Manager</string>
     <string name="login_subtitle">Bestätigen Sie Ihre Identität, um fortzufahren</string>
     <string name="login_btn">MIT FINGERABDRUCK / PIN AUTHENTIFIZIEREN</string>
 
+    <!-- Biometrische Meldungen -->
     <string name="biometric_no_hardware">Dieses Gerät hat keinen biometrischen Sensor</string>
     <string name="biometric_none_enrolled">Kein Fingerabdruck oder PIN auf diesem Gerät konfiguriert</string>
     <string name="biometric_unavailable">Biometrische Authentifizierung nicht verfügbar</string>
     <string name="biometric_error_prefix">Authentifizierungsfehler: %1$s</string>
 
+    <!-- Biometrischer Dialog -->
     <string name="dialog_biometric_title">Passwort-Manager</string>
     <string name="dialog_biometric_subtitle">Fingerabdruck oder Geräte-PIN verwenden</string>
 
+    <!-- Menübildschirm -->
     <string name="menu_btn_salir">ABMELDEN</string>
     <string name="menu_search_hint">🔍 Website suchen</string>
     <string name="menu_empty_list">Keine gespeicherten Passwörter.\nTippen Sie auf + NEUES PASSWORT, um zu beginnen.</string>
     <string name="menu_btn_nueva">+ NEUES PASSWORT</string>
     <string name="menu_no_results">Keine Ergebnisse für \"%1$s\" gefunden</string>
 
+    <!-- Bearbeitungsbildschirm -->
     <string name="editor_title_nuevo">✏️ Neues Passwort</string>
     <string name="editor_label_sitio">WEBSITE</string>
     <string name="editor_label_usuario">BENUTZER</string>
@@ -41,6 +47,7 @@
     <string name="editor_btn_guardar">SPEICHERN</string>
     <string name="editor_link_eliminar">🗑 Dieses Passwort löschen</string>
 
+    <!-- Bestätigungsdialoge -->
     <string name="dialog_confirm_title">Bestätigen</string>
     <string name="dialog_confirm_save_text">Möchten Sie die Änderungen für \"%1$s\" speichern?</string>
     <string name="dialog_delete_title">⚠️ Passwort löschen</string>

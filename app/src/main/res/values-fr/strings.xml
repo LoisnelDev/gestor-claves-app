@@ -2,29 +2,35 @@
 <resources>
     <string name="app_name">Gestionnaire de mots de passe</string>
 
+    <!-- Notifications -->
     <string name="notification_channel_name">Sécurité de l\'application</string>
     <string name="notification_channel_desc">Notifications de sécurité en cas d\'expiration</string>
     <string name="notification_title">⚠️ Gestionnaire verrouillé</string>
     <string name="notification_text">Session fermée automatiquement en raison d\'inactivité.</string>
 
+    <!-- Écran de connexion -->
     <string name="login_title">🔐 Gestionnaire de mots de passe</string>
     <string name="login_subtitle">Vérifiez votre identité pour continuer</string>
     <string name="login_btn">S\'AUTHENTIFIER AVEC EMPREINTE / PIN</string>
 
+    <!-- Messages biométriques -->
     <string name="biometric_no_hardware">Cet appareil ne dispose pas de capteur biométrique</string>
     <string name="biometric_none_enrolled">Aucune empreinte digitale ou PIN configuré sur cet appareil</string>
     <string name="biometric_unavailable">Authentification biométrique non disponible</string>
     <string name="biometric_error_prefix">Erreur d\'authentification : %1$s</string>
 
+    <!-- Boîte de dialogue biométrique -->
     <string name="dialog_biometric_title">Gestionnaire de mots de passe</string>
     <string name="dialog_biometric_subtitle">Utilisez votre empreinte digitale ou le PIN de l\'appareil</string>
 
+    <!-- Écran du menu -->
     <string name="menu_btn_salir">DÉCONNEXION</string>
     <string name="menu_search_hint">🔍 Rechercher un site</string>
     <string name="menu_empty_list">Aucun mot de passe enregistré.\nAppuyez sur + NOUVEAU MOT DE PASSE pour commencer.</string>
     <string name="menu_btn_nueva">+ NOUVEAU MOT DE PASSE</string>
     <string name="menu_no_results">Aucun résultat trouvé pour \"%1$s\"</string>
 
+    <!-- Écran d\'édition -->
     <string name="editor_title_nuevo">✏️ Nouveau mot de passe</string>
     <string name="editor_label_sitio">SITE</string>
     <string name="editor_label_usuario">UTILISATEUR</string>
@@ -41,6 +47,7 @@
     <string name="editor_btn_guardar">ENREGISTRER</string>
     <string name="editor_link_eliminar">🗑 Supprimer ce mot de passe</string>
 
+    <!-- Boîtes de dialogue de confirmation -->
     <string name="dialog_confirm_title">Confirmer</string>
     <string name="dialog_confirm_save_text">Voulez-vous enregistrer les modifications pour \"%1$s\" ?</string>
     <string name="dialog_delete_title">⚠️ Supprimer le mot de passe</string>

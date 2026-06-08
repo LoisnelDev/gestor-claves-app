@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
+    <!--
+        ARQUITECTURA DE RECUPERACIÓN:
+        - backup_local_invisible.dat SE INCLUYE: archivo de recuperación
+          para desinstalación accidental o migración a dispositivo nuevo.
+        - SharedPreferences SE EXCLUYEN: cifradas con clave de hardware,
+          irrecuperables en otro dispositivo.
+    -->
     <include domain="file" path="backup_local_invisible.dat" />
-
     <exclude domain="sharedpref" path="gestor_claves_prefs.xml" />
 </full-backup-content>

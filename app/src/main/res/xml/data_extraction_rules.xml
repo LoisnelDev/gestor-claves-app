@@ -1,29 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    ARQUITECTURA DE RECUPERACIÓN DE DATOS
-
-    backup_local_invisible.dat se INCLUYE en backups de nube
-    y transferencia de dispositivo. Es el mecanismo de recuperación
-    para desinstalación accidental (mismo dispositivo) y migración
-    a dispositivo nuevo.
-
-    Las SharedPreferences se EXCLUYEN porque están cifradas con
-    una clave ligada al hardware del dispositivo y son irrecuperables
-    en cualquier otro dispositivo.
-
-    disableIfNoEncryptionCapabilities="true": si Google Drive no puede
-    garantizar cifrado end-to-end, el backup no se realiza.
-    En dispositivos modernos esto siempre está disponible.
--->
 <data-extraction-rules>
+    <!--
+        ARQUITECTURA DE RECUPERACIÓN:
+        - backup_local_invisible.dat SE INCLUYE en cloud-backup y
+          device-transfer para recuperación en dos escenarios:
+          1. Desinstalación accidental (mismo dispositivo)
+          2. Migración a dispositivo nuevo via Google Backup
+        - SharedPreferences y databases SE EXCLUYEN: ligadas al
+          hardware del dispositivo original, irrecuperables en otro.
+        - disableIfNoEncryptionCapabilities="true": solo hace backup
+          si Google Drive puede garantizar cifrado end-to-end.
+    -->
     <cloud-backup disableIfNoEncryptionCapabilities="true">
         <include domain="file" path="backup_local_invisible.dat" />
-        <exclude domain="sharedpref" path="." />
-        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="gestor_claves_prefs.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="file" path="backup_local_invisible.dat" />
-        <exclude domain="sharedpref" path="." />
-        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="gestor_claves_prefs.xml" />
     </device-transfer>
 </data-extraction-rules>
