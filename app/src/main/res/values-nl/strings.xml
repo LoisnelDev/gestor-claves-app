@@ -1,36 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Wachtwoordbeheer</string>
-
-    <!-- Meldingen -->
     <string name="notification_channel_name">App-beveiliging</string>
     <string name="notification_channel_desc">Beveiligingsmeldingen bij time-out</string>
     <string name="notification_title">⚠️ Beheerder vergrendeld</string>
     <string name="notification_text">Sessie automatisch gesloten wegens inactiviteit.</string>
-
-    <!-- Inlogscherm -->
     <string name="login_title">🔐 Wachtwoordbeheer</string>
     <string name="login_subtitle">Verifieer uw identiteit om door te gaan</string>
     <string name="login_btn">AUTHENTICEREN MET VINGERAFDRUK / PIN</string>
-
-    <!-- Biometrische berichten -->
     <string name="biometric_no_hardware">Dit apparaat heeft geen biometrische sensor</string>
     <string name="biometric_none_enrolled">Geen vingerafdruk of PIN geconfigureerd op dit apparaat</string>
     <string name="biometric_unavailable">Biometrische authenticatie niet beschikbaar</string>
     <string name="biometric_error_prefix">Authenticatiefout: %1$s</string>
-
-    <!-- Biometrisch dialoogvenster -->
     <string name="dialog_biometric_title">Wachtwoordbeheer</string>
     <string name="dialog_biometric_subtitle">Gebruik uw vingerafdruk of apparaat-PIN</string>
-
-    <!-- Menüscherm -->
     <string name="menu_btn_salir">UITLOGGEN</string>
     <string name="menu_search_hint">🔍 Site zoeken</string>
     <string name="menu_empty_list">Geen opgeslagen wachtwoorden.\nTik op + NIEUW WACHTWOORD om te beginnen.</string>
     <string name="menu_btn_nueva">+ NIEUW WACHTWOORD</string>
     <string name="menu_no_results">Geen resultaten gevonden voor \"%1$s\"</string>
-
-    <!-- Bewerkingsscherm -->
     <string name="editor_title_nuevo">✏️ Nieuw wachtwoord</string>
     <string name="editor_label_sitio">SITE</string>
     <string name="editor_label_usuario">GEBRUIKER</string>
@@ -46,8 +34,6 @@
     <string name="editor_btn_modificar">WIJZIGEN</string>
     <string name="editor_btn_guardar">OPSLAAN</string>
     <string name="editor_link_eliminar">🗑 Dit wachtwoord verwijderen</string>
-
-    <!-- Bevestigingsdialoogvensters -->
     <string name="dialog_confirm_title">Bevestigen</string>
     <string name="dialog_confirm_save_text">Wilt u de wijzigingen voor \"%1$s\" opslaan?</string>
     <string name="dialog_delete_title">⚠️ Wachtwoord verwijderen</string>
@@ -56,4 +42,34 @@
     <string name="dialog_btn_no">NEE</string>
     <string name="dialog_btn_eliminar">VERWIJDEREN</string>
     <string name="dialog_btn_cancelar">ANNULEREN</string>
+    <string name="master_warning_title">⚠️ KRITIEKE WAARSCHUWING</string>
+    <string name="master_warning_body">Uw hoofdwachtwoord kan door NIEMAND worden hersteld, inclusief de ontwikkelaar.</string>
+    <string name="master_warning_if_forget">Als u dit wachtwoord vergeet of verliest:</string>
+    <string name="master_warning_item1">❌  Uw back-up kan niet worden ontsleuteld</string>
+    <string name="master_warning_item2">❌  Herstel op een nieuw apparaat is onmogelijk</string>
+    <string name="master_warning_item3">❌  Er is geen optie voor opnieuw instellen of herstel</string>
+    <string name="master_warning_recommendation_title">✅  Aanbeveling</string>
+    <string name="master_warning_recommendation_body">Schrijf uw wachtwoord op en bewaar het op een veilige fysieke locatie voordat u verdergaat.</string>
+    <string name="master_warning_confirm">IK BEGRIJP HET — DOORGAAN</string>
+    <string name="master_warning_back">TERUG — WACHTWOORD WIJZIGEN</string>
+    <string name="master_create_title">🔑 Hoofdwachtwoord</string>
+    <string name="master_create_subtitle">Maak een hoofdwachtwoord aan om uw back-up te versleutelen.\nU heeft dit nodig om uw gegevens op een nieuw apparaat te herstellen.</string>
+    <string name="master_field_password">Hoofdwachtwoord</string>
+    <string name="master_field_confirm">Wachtwoord bevestigen</string>
+    <string name="master_btn_create">AANMAKEN EN DOORGAAN</string>
+    <string name="master_error_min_length">Wachtwoord moet minimaal 8 tekens bevatten</string>
+    <string name="master_error_mismatch">Wachtwoorden komen niet overeen</string>
+    <string name="master_strength_weak">Zwak</string>
+    <string name="master_strength_fair">Matig</string>
+    <string name="master_strength_good">Goed</string>
+    <string name="master_strength_strong">Sterk</string>
+    <string name="master_recovery_title">🔑 Herstel</string>
+    <string name="master_recovery_subtitle">Er is een back-up gevonden. Voer uw hoofdwachtwoord in om uw gegevens te herstellen.</string>
+    <string name="master_recovery_btn">GEGEVENS HERSTELLEN</string>
+    <string name="master_recovery_error">Onjuist wachtwoord. Probeer het opnieuw.</string>
+    <string name="master_session_title">🔑 Hoofdwachtwoord invoeren</string>
+    <string name="master_session_subtitle">Voer uw hoofdwachtwoord in om deze sessie te ontgrendelen.</string>
+    <string name="master_session_btn">ONTGRENDELEN</string>
+    <string name="master_btn_show">Tonen</string>
+    <string name="master_btn_hide">Verbergen</string>
 </resources>

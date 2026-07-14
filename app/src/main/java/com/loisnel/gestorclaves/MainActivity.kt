@@ -14,13 +14,13 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -59,7 +59,9 @@ import javax.crypto.spec.SecretKeySpec
 // ═══════════════════════════════════════════════════════════
 // MODELO DE DATOS
 // ═══════════════════════════════════════════════════════════
-enum class Pantalla { LOGIN, CREAR_MASTER, INGRESAR_MASTER, MENU, EDITOR }
+// INGRESAR_MASTER: recuperación (backup existe, prefs vacías)
+// INGRESAR_SESSION: reinicio de sesión (prefs tienen datos, master no está en memoria)
+enum class Pantalla { LOGIN, CREAR_MASTER, INGRESAR_MASTER, INGRESAR_SESSION, MENU, EDITOR }
 
 data class Clave(
     val sitio: String,
@@ -71,13 +73,16 @@ data class Clave(
 // ═══════════════════════════════════════════════════════════
 // CONSTANTES DE SEGURIDAD
 // ═══════════════════════════════════════════════════════════
-private const val PBKDF2_ITERATIONS = 200_000
+private const val PBKDF2_ITERATIONS  = 200_000
 private const val PBKDF2_KEY_LENGTH  = 256
 private const val SALT_SIZE_BYTES    = 16
 private const val IV_SIZE_BYTES      = 12
 private const val GCM_TAG_LENGTH     = 128
 private const val PBKDF2_ALGORITHM   = "PBKDF2WithHmacSHA256"
 private const val AES_ALGORITHM      = "AES/GCM/NoPadding"
+// Flag guardado en EncryptedSharedPreferences del dispositivo actual.
+// Solo indica si el master fue configurado en ESTE dispositivo.
+// No viaja en el backup (EncryptedSharedPreferences está excluida del backup).
 private const val MASTER_FLAG_KEY    = "master_configured"
 
 // ═══════════════════════════════════════════════════════════
@@ -112,55 +117,38 @@ class MainActivity : FragmentActivity() {
 
     private fun mostrarNotificacionCierre() {
         val channelId = "gestor_seguridad"
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
+        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
+            nm.createNotificationChannel(NotificationChannel(channelId,
                 getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply { description = getString(R.string.notification_channel_desc) }
-            notificationManager.createNotificationChannel(channel)
+                NotificationManager.IMPORTANCE_HIGH).apply {
+                description = getString(R.string.notification_channel_desc) })
         }
-
         val tienePermiso = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
                     android.content.pm.PackageManager.PERMISSION_GRANTED
         } else true
-
         if (tienePermiso) {
-            val notificacion = NotificationCompat.Builder(this, channelId)
+            nm.notify(1001, NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(android.R.drawable.ic_lock_lock)
                 .setContentTitle(getString(R.string.notification_title))
                 .setContentText(getString(R.string.notification_text))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-                .build()
-            notificationManager.notify(1001, notificacion)
+                .setAutoCancel(true).build())
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissions(
-                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1
-            )
-        }
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         reiniciarTemporizador()
-
         setContent {
             MaterialTheme(colorScheme = darkColorScheme()) {
-                GestorApp(
-                    activityScope = lifecycleScope,
-                    activity = this,
-                    onSalir = { finishAffinity() }
-                )
+                GestorApp(activityScope = lifecycleScope, activity = this,
+                    onSalir = { finishAffinity() })
             }
         }
     }
@@ -169,21 +157,9 @@ class MainActivity : FragmentActivity() {
         if (!esperandoBiometria) reiniciarTemporizador()
         return super.dispatchTouchEvent(ev)
     }
-
-    override fun onResume() {
-        super.onResume()
-        if (!esperandoBiometria) reiniciarTemporizador()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (!esperandoBiometria) pausarTemporizador()
-    }
-
-    override fun onDestroy() {
-        inactivityHandler.removeCallbacks(inactivityRunnable)
-        super.onDestroy()
-    }
+    override fun onResume()  { super.onResume();  if (!esperandoBiometria) reiniciarTemporizador() }
+    override fun onPause()   { super.onPause();   if (!esperandoBiometria) pausarTemporizador() }
+    override fun onDestroy() { inactivityHandler.removeCallbacks(inactivityRunnable); super.onDestroy() }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -195,115 +171,105 @@ private var prefsInstance: android.content.SharedPreferences? = null
 private fun getPrefs(context: Context): android.content.SharedPreferences {
     return prefsInstance ?: synchronized(context.applicationContext) {
         prefsInstance ?: EncryptedSharedPreferences.create(
-            context.applicationContext,
-            "gestor_claves_prefs",
+            context.applicationContext, "gestor_claves_prefs",
             MasterKey.Builder(context.applicationContext)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build(),
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         ).also { prefsInstance = it }
     }
 }
 
-// ── Verificar si la contraseña maestra ya fue configurada ───
-fun masterConfigurado(context: Context): Boolean {
+// ═══════════════════════════════════════════════════════════
+// DETECCIÓN DE ESTADO — lógica corregida
+// ═══════════════════════════════════════════════════════════
+//
+// PROBLEMA ORIGINAL: el flag MASTER_FLAG_KEY vivía en EncryptedSharedPreferences,
+// que está ligada al Android Keystore del hardware. Al desinstalar/reinstalar,
+// el Keystore se destruye y el flag desaparece → la app siempre pedía master.
+//
+// SOLUCIÓN: Tres fuentes de verdad independientes:
+// 1. EncryptedSharedPreferences.MASTER_FLAG_KEY → "master configurado en ESTE dispositivo"
+// 2. backup_local_invisible.dat existe          → "hay datos de otro dispositivo/instalación"
+// 3. EncryptedSharedPreferences.all sin FLAG    → "hay datos en esta sesión"
+//
+// FLUJO CORRECTO:
+// ┌─ ¿Prefs tienen datos de usuario? (excluyendo FLAG)
+// │   SÍ → ¿passwordMaster en memoria está vacío?
+// │   │     SÍ → INGRESAR_SESSION (reinicio de app, pedir master una vez)
+// │   │     NO → MENU (sesión activa)
+// │   NO → ¿Existe backup.dat?
+// │         SÍ → INGRESAR_MASTER (recuperación cross-device)
+// │         NO → CREAR_MASTER (primer uso absoluto)
+
+data class EstadoApp(
+    val tieneDatosLocales: Boolean,
+    val tieneBackupDat: Boolean,
+    val masterConfiguradoEnDispositivo: Boolean
+)
+
+fun detectarEstado(context: Context): EstadoApp {
     return try {
-        getPrefs(context).getBoolean(MASTER_FLAG_KEY, false)
-    } catch (e: Exception) { false }
+        val prefs = getPrefs(context)
+        val tieneDatos = prefs.all.any { it.key != MASTER_FLAG_KEY }
+        val masterFlag = prefs.getBoolean(MASTER_FLAG_KEY, false)
+        val tieneBackup = java.io.File(context.filesDir, "backup_local_invisible.dat").exists()
+        EstadoApp(tieneDatos, tieneBackup, masterFlag)
+    } catch (e: Exception) {
+        EstadoApp(false, false, false)
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
-// CIFRADO DEL RESPALDO — PBKDF2 + AES-256-GCM
+// CIFRADO PBKDF2 + AES-256-GCM
 // ═══════════════════════════════════════════════════════════
-
-// Derivar clave AES-256 desde contraseña maestra + salt
 private fun derivarClave(password: String, salt: ByteArray): SecretKeySpec {
-    val spec = PBEKeySpec(
-        password.toCharArray(),
-        salt,
-        PBKDF2_ITERATIONS,
-        PBKDF2_KEY_LENGTH
-    )
-    val factory = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM)
-    val keyBytes = factory.generateSecret(spec).encoded
-    spec.clearPassword() // Limpiar contraseña de memoria inmediatamente
+    val spec = PBEKeySpec(password.toCharArray(), salt, PBKDF2_ITERATIONS, PBKDF2_KEY_LENGTH)
+    val keyBytes = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM).generateSecret(spec).encoded
+    spec.clearPassword()
     return SecretKeySpec(keyBytes, "AES")
 }
 
-// Cifrar JSON con AES-256-GCM
-// Formato del archivo: [16 bytes salt][12 bytes IV][N bytes cifrado]
 private fun cifrarRespaldo(jsonPlano: String, password: String): ByteArray {
-    val salt = ByteArray(SALT_SIZE_BYTES).also { SecureRandom().nextBytes(it) }
-    val iv   = ByteArray(IV_SIZE_BYTES).also  { SecureRandom().nextBytes(it) }
-    val clave = derivarClave(password, salt)
-
+    val salt   = ByteArray(SALT_SIZE_BYTES).also { SecureRandom().nextBytes(it) }
+    val iv     = ByteArray(IV_SIZE_BYTES).also   { SecureRandom().nextBytes(it) }
     val cipher = Cipher.getInstance(AES_ALGORITHM)
-    cipher.init(Cipher.ENCRYPT_MODE, clave, GCMParameterSpec(GCM_TAG_LENGTH, iv))
-    val cifrado = cipher.doFinal(jsonPlano.toByteArray(Charsets.UTF_8))
-
-    // Empaquetamos: salt + IV + datos cifrados
-    return salt + iv + cifrado
+    cipher.init(Cipher.ENCRYPT_MODE, derivarClave(password, salt), GCMParameterSpec(GCM_TAG_LENGTH, iv))
+    return salt + iv + cipher.doFinal(jsonPlano.toByteArray(Charsets.UTF_8))
 }
 
-// Descifrar respaldo con contraseña maestra
-// Retorna null si la contraseña es incorrecta
 private fun descifrarRespaldo(datos: ByteArray, password: String): String? {
     return try {
         if (datos.size < SALT_SIZE_BYTES + IV_SIZE_BYTES) return null
-
         val salt    = datos.copyOfRange(0, SALT_SIZE_BYTES)
         val iv      = datos.copyOfRange(SALT_SIZE_BYTES, SALT_SIZE_BYTES + IV_SIZE_BYTES)
         val cifrado = datos.copyOfRange(SALT_SIZE_BYTES + IV_SIZE_BYTES, datos.size)
-
-        val clave = derivarClave(password, salt)
-        val cipher = Cipher.getInstance(AES_ALGORITHM)
-        cipher.init(Cipher.DECRYPT_MODE, clave, GCMParameterSpec(GCM_TAG_LENGTH, iv))
+        val cipher  = Cipher.getInstance(AES_ALGORITHM)
+        cipher.init(Cipher.DECRYPT_MODE, derivarClave(password, salt), GCMParameterSpec(GCM_TAG_LENGTH, iv))
         cipher.doFinal(cifrado).toString(Charsets.UTF_8)
-    } catch (e: Exception) {
-        null // Contraseña incorrecta o datos corruptos
-    }
+    } catch (e: Exception) { null }
 }
 
 // ═══════════════════════════════════════════════════════════
 // OPERACIONES DE DATOS
 // ═══════════════════════════════════════════════════════════
-
-// Actualizar respaldo cifrado tras cada operación
-private fun actualizarRespaldoLocal(
-    context: Context,
-    prefs: android.content.SharedPreferences,
-    passwordMaster: String
-) {
+private fun actualizarRespaldoLocal(context: Context,
+    prefs: android.content.SharedPreferences, passwordMaster: String) {
     try {
-        val jsonBackup = JSONObject()
-        prefs.all.forEach { (sitio, valor) ->
-            if (sitio != MASTER_FLAG_KEY) // No incluir el flag interno
-                jsonBackup.put(sitio, valor.toString())
-        }
-        val jsonPlano   = jsonBackup.toString()
-        val datosCifrados = cifrarRespaldo(jsonPlano, passwordMaster)
+        val json = JSONObject()
+        prefs.all.forEach { (k, v) -> if (k != MASTER_FLAG_KEY) json.put(k, v.toString()) }
         java.io.File(context.filesDir, "backup_local_invisible.dat")
-            .writeBytes(datosCifrados)
-    } catch (e: Exception) {
-        // Error silencioso — respaldo es secundario al guardado principal
-    }
+            .writeBytes(cifrarRespaldo(json.toString(), passwordMaster))
+    } catch (e: Exception) { }
 }
 
-// Guardar clave
-fun guardarClaveAsync(
-    scope: CoroutineScope,
-    context: Context,
-    clave: Clave,
-    passwordMaster: String,
-    onCompletado: () -> Unit
-) {
+fun guardarClaveAsync(scope: CoroutineScope, context: Context, clave: Clave,
+    passwordMaster: String, onCompletado: () -> Unit) {
     scope.launch {
         withContext(Dispatchers.IO) {
             try {
                 val json = JSONObject().apply {
-                    put("usuario", clave.usuario)
-                    put("password", clave.password)
+                    put("usuario", clave.usuario); put("password", clave.password)
                     put("extras", clave.extras)
                 }.toString()
                 val prefs = getPrefs(context)
@@ -315,34 +281,20 @@ fun guardarClaveAsync(
     }
 }
 
-// Cargar claves
 suspend fun cargarClavesAsync(context: Context): List<Clave> =
     withContext(Dispatchers.IO) {
-        return@withContext try {
-            getPrefs(context).all
-                .filter { it.key != MASTER_FLAG_KEY }
+        try {
+            getPrefs(context).all.filter { it.key != MASTER_FLAG_KEY }
                 .mapNotNull { (sitio, valor) ->
-                    try {
-                        val json = JSONObject(valor.toString())
-                        Clave(
-                            sitio    = sitio,
-                            usuario  = json.optString("usuario"),
-                            password = json.optString("password"),
-                            extras   = json.optString("extras")
-                        )
+                    try { val j = JSONObject(valor.toString())
+                        Clave(sitio, j.optString("usuario"), j.optString("password"), j.optString("extras"))
                     } catch (e: Exception) { null }
                 }.sortedBy { it.sitio.lowercase() }
         } catch (e: Exception) { emptyList() }
     }
 
-// Eliminar clave
-fun eliminarClaveAsync(
-    scope: CoroutineScope,
-    context: Context,
-    sitio: String,
-    passwordMaster: String,
-    onCompletado: () -> Unit
-) {
+fun eliminarClaveAsync(scope: CoroutineScope, context: Context, sitio: String,
+    passwordMaster: String, onCompletado: () -> Unit) {
     scope.launch {
         withContext(Dispatchers.IO) {
             try {
@@ -355,19 +307,13 @@ fun eliminarClaveAsync(
     }
 }
 
-// Configurar contraseña maestra por primera vez
-fun configurarMasterAsync(
-    scope: CoroutineScope,
-    context: Context,
-    passwordMaster: String,
-    onCompletado: () -> Unit
-) {
+fun configurarMasterAsync(scope: CoroutineScope, context: Context,
+    passwordMaster: String, onCompletado: () -> Unit) {
     scope.launch {
         withContext(Dispatchers.IO) {
             try {
                 val prefs = getPrefs(context)
                 prefs.edit().putBoolean(MASTER_FLAG_KEY, true).commit()
-                // Crear respaldo inicial cifrado (vacío)
                 actualizarRespaldoLocal(context, prefs, passwordMaster)
             } catch (e: Exception) { }
         }
@@ -375,36 +321,32 @@ fun configurarMasterAsync(
     }
 }
 
-// Verificar y restaurar desde respaldo cifrado
-suspend fun verificarYRestaurarRespaldo(
-    context: Context,
-    passwordMaster: String
-): Boolean = withContext(Dispatchers.IO) {
-    return@withContext try {
-        val prefs = getPrefs(context)
+// Restaurar desde backup cifrado — retorna true si éxito
+suspend fun restaurarDesdeBackup(context: Context, passwordMaster: String): Boolean =
+    withContext(Dispatchers.IO) {
+        try {
+            val archivo = java.io.File(context.filesDir, "backup_local_invisible.dat")
+            if (!archivo.exists()) return@withContext false
+            val datos = archivo.readBytes()
+            if (datos.isEmpty()) return@withContext false
+            val jsonPlano = descifrarRespaldo(datos, passwordMaster) ?: return@withContext false
+            val json = JSONObject(jsonPlano)
+            val prefs = getPrefs(context)
+            val editor = prefs.edit()
+            json.keys().forEach { editor.putString(it, json.getString(it)) }
+            editor.putBoolean(MASTER_FLAG_KEY, true)
+            editor.commit()
+            true
+        } catch (e: Exception) { false }
+    }
 
-        // Solo restaurar si no hay datos de usuario
-        val tieneDatos = prefs.all.any { it.key != MASTER_FLAG_KEY }
-        if (tieneDatos) return@withContext true
-
+// Verificar contraseña maestra sin restaurar (para INGRESAR_SESSION)
+fun verificarPasswordMaster(context: Context, passwordMaster: String): Boolean {
+    return try {
         val archivo = java.io.File(context.filesDir, "backup_local_invisible.dat")
-        if (!archivo.exists()) return@withContext false
-
-        val datosCifrados = archivo.readBytes()
-        if (datosCifrados.isEmpty()) return@withContext false
-
-        // Intentar descifrar — si falla, contraseña incorrecta
-        val jsonPlano = descifrarRespaldo(datosCifrados, passwordMaster)
-            ?: return@withContext false // Contraseña incorrecta
-
-        val jsonBackup = JSONObject(jsonPlano)
-        val editor = prefs.edit()
-        jsonBackup.keys().forEach { sitio ->
-            editor.putString(sitio, jsonBackup.getString(sitio))
-        }
-        editor.putBoolean(MASTER_FLAG_KEY, true)
-        editor.commit()
-        true
+        if (!archivo.exists()) return true // Sin backup, aceptar (caso edge)
+        val datos = archivo.readBytes()
+        descifrarRespaldo(datos, passwordMaster) != null
     } catch (e: Exception) { false }
 }
 
@@ -412,18 +354,14 @@ suspend fun verificarYRestaurarRespaldo(
 // APP PRINCIPAL
 // ═══════════════════════════════════════════════════════════
 @Composable
-fun GestorApp(
-    activityScope: CoroutineScope,
-    activity: MainActivity,
-    onSalir: () -> Unit
-) {
+fun GestorApp(activityScope: CoroutineScope, activity: MainActivity, onSalir: () -> Unit) {
     val context = LocalContext.current
     var pantalla by remember { mutableStateOf(Pantalla.LOGIN) }
     var claveEditando by remember { mutableStateOf<Clave?>(null) }
     var listaClaves by remember { mutableStateOf(listOf<Clave>()) }
     var cargando by remember { mutableStateOf(false) }
-
-    // Contraseña maestra en memoria — nunca persiste en variables globales
+    // Contraseña maestra en memoria — dura solo mientras la app está activa
+    // Se limpia al cerrar la app (temporizador o usuario)
     var passwordMaster by remember { mutableStateOf("") }
 
     LaunchedEffect(pantalla) {
@@ -438,22 +376,27 @@ fun GestorApp(
         Pantalla.LOGIN -> PantallaLogin(
             activity = activity,
             onAutenticado = {
-                // Después de biometría: verificar si es primer uso o recuperación
-                val esPrimerUso = !masterConfigurado(context)
-                val tieneRespaldo = java.io.File(
-                    context.filesDir, "backup_local_invisible.dat"
-                ).exists()
-
+                // LÓGICA CORREGIDA: tres fuentes de verdad
+                val estado = detectarEstado(context)
                 pantalla = when {
-                    esPrimerUso && !tieneRespaldo -> Pantalla.CREAR_MASTER
-                    esPrimerUso && tieneRespaldo  -> Pantalla.INGRESAR_MASTER
-                    else                           -> Pantalla.MENU
+                    // Caso 1: hay datos locales y master en memoria → sesión activa
+                    estado.tieneDatosLocales && passwordMaster.isNotEmpty() ->
+                        Pantalla.MENU
+                    // Caso 2: hay datos locales pero master no está en memoria
+                    // → app se reinició, pedir master una vez por sesión
+                    estado.tieneDatosLocales && passwordMaster.isEmpty() ->
+                        Pantalla.INGRESAR_SESSION
+                    // Caso 3: no hay datos locales pero hay backup
+                    // → recuperación (desinstalación o dispositivo nuevo)
+                    !estado.tieneDatosLocales && estado.tieneBackupDat ->
+                        Pantalla.INGRESAR_MASTER
+                    // Caso 4: primer uso absoluto
+                    else -> Pantalla.CREAR_MASTER
                 }
             }
         )
 
         Pantalla.CREAR_MASTER -> PantallaCrearMaster(
-            activityScope = activityScope,
             onConfirmado = { master ->
                 passwordMaster = master
                 configurarMasterAsync(activityScope, context, master) {
@@ -464,26 +407,31 @@ fun GestorApp(
 
         Pantalla.INGRESAR_MASTER -> PantallaIngresarMaster(
             activityScope = activityScope,
+            esRecuperacion = true,
             onConfirmado = { master ->
                 passwordMaster = master
                 pantalla = Pantalla.MENU
-            },
-            onRecuperacionFallida = {
-                // Contraseña incorrecta — volver a intentar
+            }
+        )
+
+        Pantalla.INGRESAR_SESSION -> PantallaIngresarMaster(
+            activityScope = activityScope,
+            esRecuperacion = false,
+            onConfirmado = { master ->
+                passwordMaster = master
+                pantalla = Pantalla.MENU
             }
         )
 
         Pantalla.MENU -> PantallaMenu(
-            claves = listaClaves,
-            cargando = cargando,
+            claves = listaClaves, cargando = cargando,
             onNuevo = { claveEditando = null; pantalla = Pantalla.EDITOR },
             onEditar = { clave -> claveEditando = clave; pantalla = Pantalla.EDITOR },
             onSalir = onSalir
         )
 
         Pantalla.EDITOR -> PantallaEditor(
-            activityScope = activityScope,
-            claveExistente = claveEditando,
+            activityScope = activityScope, claveExistente = claveEditando,
             passwordMaster = passwordMaster,
             onGuardar = { pantalla = Pantalla.MENU },
             onVolver = { pantalla = Pantalla.MENU }
@@ -495,109 +443,47 @@ fun GestorApp(
 // PANTALLA LOGIN
 // ═══════════════════════════════════════════════════════════
 @Composable
-fun PantallaLogin(
-    activity: MainActivity,
-    onAutenticado: () -> Unit
-) {
+fun PantallaLogin(activity: MainActivity, onAutenticado: () -> Unit) {
     val context = LocalContext.current
     var mensajeError by remember { mutableStateOf("") }
     var intentando by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         activity.setEsperandoBiometria(true)
-        lanzarBiometria(
-            activity = activity,
-            onExito = {
-                activity.setEsperandoBiometria(false)
-                intentando = false
-                onAutenticado()
-            },
-            onError = { error ->
-                activity.setEsperandoBiometria(false)
-                intentando = false
-                mensajeError = error
-            }
-        )
+        lanzarBiometria(activity,
+            onExito = { activity.setEsperandoBiometria(false); intentando = false; onAutenticado() },
+            onError = { e -> activity.setEsperandoBiometria(false); intentando = false; mensajeError = e })
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .systemBarsPadding(),
-        contentAlignment = Alignment.Center
-    ) {
-        Card(
-            modifier = Modifier.padding(32.dp).fillMaxWidth(),
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFF121212)).systemBarsPadding(),
+        contentAlignment = Alignment.Center) {
+        Card(modifier = Modifier.padding(32.dp).fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
-        ) {
-            Column(
-                modifier = Modifier.padding(32.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))) {
+            Column(modifier = Modifier.padding(32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.login_title),
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Text(
-                    text = stringResource(R.string.login_subtitle),
-                    fontSize = 13.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-                if (mensajeError.isNotEmpty()) {
-                    Text(
-                        text = mensajeError,
-                        color = Color(0xFFFF6B6B),
-                        fontSize = 13.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                Button(
-                    onClick = {
-                        if (intentando) return@Button
-                        intentando = true
-                        mensajeError = ""
-                        activity.setEsperandoBiometria(true)
-                        val fragActivity = context as? FragmentActivity ?: run {
-                            activity.setEsperandoBiometria(false)
-                            intentando = false
-                            return@Button
-                        }
-                        lanzarBiometria(
-                            activity = fragActivity,
-                            onExito = {
-                                activity.setEsperandoBiometria(false)
-                                intentando = false
-                                onAutenticado()
-                            },
-                            onError = { error ->
-                                activity.setEsperandoBiometria(false)
-                                intentando = false
-                                mensajeError = error
-                            }
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
-                    enabled = !intentando,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))
-                ) {
-                    if (intentando) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.login_btn),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
+                verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(stringResource(R.string.login_title), fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold, color = Color.White)
+                Text(stringResource(R.string.login_subtitle), fontSize = 13.sp,
+                    color = Color.Gray, textAlign = TextAlign.Center)
+                if (mensajeError.isNotEmpty())
+                    Text(mensajeError, color = Color(0xFFFF6B6B), fontSize = 13.sp,
+                        textAlign = TextAlign.Center)
+                Button(onClick = {
+                    if (intentando) return@Button
+                    intentando = true; mensajeError = ""
+                    activity.setEsperandoBiometria(true)
+                    val fa = context as? FragmentActivity ?: run {
+                        activity.setEsperandoBiometria(false); intentando = false; return@Button }
+                    lanzarBiometria(fa,
+                        onExito = { activity.setEsperandoBiometria(false); intentando = false; onAutenticado() },
+                        onError = { e -> activity.setEsperandoBiometria(false); intentando = false; mensajeError = e })
+                }, modifier = Modifier.fillMaxWidth().height(52.dp), enabled = !intentando,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))) {
+                    if (intentando) CircularProgressIndicator(color = Color.White,
+                        modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    else Text(stringResource(R.string.login_btn), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -608,258 +494,220 @@ fun PantallaLogin(
 // PANTALLA CREAR CONTRASEÑA MAESTRA (primer uso)
 // ═══════════════════════════════════════════════════════════
 @Composable
-fun PantallaCrearMaster(
-    activityScope: CoroutineScope,
-    onConfirmado: (String) -> Unit
-) {
+fun PantallaCrearMaster(onConfirmado: (String) -> Unit) {
     var password by remember { mutableStateOf("") }
     var confirmar by remember { mutableStateOf("") }
     var mostrarPass by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
     var procesando by remember { mutableStateOf(false) }
+    var mostrarAdvertencia by remember { mutableStateOf(false) }
+    var passwordPendiente by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .systemBarsPadding(),
-        contentAlignment = Alignment.Center
-    ) {
-        Card(
-            modifier = Modifier.padding(24.dp).fillMaxWidth(),
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFF121212)).systemBarsPadding(),
+        contentAlignment = Alignment.Center) {
+        Card(modifier = Modifier.padding(24.dp).fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
-        ) {
-            Column(
-                modifier = Modifier.padding(28.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))) {
+            Column(modifier = Modifier.padding(28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "🔑 Master Password",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Text(
-                    text = "Create a master password to encrypt your backup. You will need it to recover your data on a new device.",
-                    fontSize = 13.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-
-                // Campo contraseña
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it; error = "" },
-                    label = { Text("Master password", color = Color.Gray) },
-                    visualTransformation = if (mostrarPass) VisualTransformation.None
-                                           else PasswordVisualTransformation(),
+                verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Text(stringResource(R.string.master_create_title), fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold, color = Color.White)
+                Text(stringResource(R.string.master_create_subtitle), fontSize = 13.sp,
+                    color = Color.Gray, textAlign = TextAlign.Center)
+                OutlinedTextField(value = password, onValueChange = { password = it; error = "" },
+                    label = { Text(stringResource(R.string.master_field_password), color = Color.Gray) },
+                    visualTransformation = if (mostrarPass) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = campoColores(),
+                    modifier = Modifier.fillMaxWidth(), colors = campoColores(),
                     trailingIcon = {
                         TextButton(onClick = { mostrarPass = !mostrarPass }) {
-                            Text(
-                                text = if (mostrarPass) "Hide" else "Show",
-                                color = Color(0xFF0066CC),
-                                fontSize = 12.sp
-                            )
+                            Text(if (mostrarPass) stringResource(R.string.master_btn_hide)
+                                 else stringResource(R.string.master_btn_show),
+                                color = Color(0xFF0066CC), fontSize = 12.sp)
                         }
-                    }
-                )
-
-                // Confirmar contraseña
-                OutlinedTextField(
-                    value = confirmar,
-                    onValueChange = { confirmar = it; error = "" },
-                    label = { Text("Confirm password", color = Color.Gray) },
+                    })
+                OutlinedTextField(value = confirmar, onValueChange = { confirmar = it; error = "" },
+                    label = { Text(stringResource(R.string.master_field_confirm), color = Color.Gray) },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = campoColores()
-                )
-
+                    modifier = Modifier.fillMaxWidth(), colors = campoColores())
                 // Indicador de fortaleza
                 if (password.isNotEmpty()) {
-                    val fortaleza = calcularFortaleza(password)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
+                    val f = calcularFortaleza(password)
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         repeat(4) { i ->
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(4.dp)
-                                    .background(
-                                        color = if (i < fortaleza.nivel)
-                                            fortaleza.color
-                                        else Color(0xFF333333),
-                                        shape = RoundedCornerShape(2.dp)
-                                    )
-                            )
+                            Box(modifier = Modifier.weight(1f).height(5.dp).background(
+                                if (i < f.nivel) f.color else Color(0xFF333333),
+                                RoundedCornerShape(2.dp)))
                         }
                     }
-                    Text(
-                        text = fortaleza.texto,
-                        color = fortaleza.color,
-                        fontSize = 11.sp,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    Text(f.texto, color = f.color, fontSize = 12.sp, modifier = Modifier.fillMaxWidth())
                 }
-
-                if (error.isNotEmpty()) {
-                    Text(
-                        text = error,
-                        color = Color(0xFFFF6B6B),
-                        fontSize = 13.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        when {
-                            password.length < 8 ->
-                                error = "Password must be at least 8 characters"
-                            password != confirmar ->
-                                error = "Passwords do not match"
-                            else -> {
-                                procesando = true
-                                onConfirmado(password)
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                if (error.isNotEmpty())
+                    Text(error, color = Color(0xFFFF6B6B), fontSize = 13.sp, textAlign = TextAlign.Center)
+                Button(onClick = {
+                    when {
+                        password.length < 8 -> error = stringResource(R.string.master_error_min_length)
+                        password != confirmar -> error = stringResource(R.string.master_error_mismatch)
+                        else -> { passwordPendiente = password; mostrarAdvertencia = true }
+                    }
+                }, modifier = Modifier.fillMaxWidth().height(52.dp),
                     enabled = !procesando && password.isNotEmpty() && confirmar.isNotEmpty(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))
-                ) {
-                    if (procesando) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("CREATE AND CONTINUE", fontWeight = FontWeight.Bold)
-                    }
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))) {
+                    if (procesando) CircularProgressIndicator(color = Color.White,
+                        modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    else Text(stringResource(R.string.master_btn_create), fontWeight = FontWeight.Bold)
                 }
-
-                Text(
-                    text = "⚠️ If you forget this password, your backup cannot be recovered.",
-                    fontSize = 11.sp,
-                    color = Color(0xFFCC7700),
-                    textAlign = TextAlign.Center
-                )
             }
         }
+    }
+
+    // ── DIÁLOGO DE ADVERTENCIA CRÍTICA ───────────────────────
+    // Multiidioma: usa stringResource → se muestra en el idioma del dispositivo
+    // No se puede cerrar tocando fuera — el usuario DEBE leer y confirmar
+    if (mostrarAdvertencia) {
+        AlertDialog(
+            onDismissRequest = { /* bloqueado intencionalmente */ },
+            containerColor = Color(0xFF1A1A1A),
+            shape = RoundedCornerShape(20.dp),
+            title = {
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Text("⚠️", fontSize = 48.sp, textAlign = TextAlign.Center)
+                    Spacer(Modifier.height(8.dp))
+                    Text(stringResource(R.string.master_warning_title),
+                        fontWeight = FontWeight.Bold, fontSize = 18.sp,
+                        color = Color(0xFFFF4444), textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth())
+                }
+            },
+            text = {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // Bloque rojo — mensaje principal
+                    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF2A0808)),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.master_warning_body),
+                            modifier = Modifier.padding(14.dp),
+                            color = Color(0xFFFF6B6B), fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                    }
+                    // Lista de consecuencias
+                    Text(stringResource(R.string.master_warning_if_forget),
+                        color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    listOf(
+                        stringResource(R.string.master_warning_item1),
+                        stringResource(R.string.master_warning_item2),
+                        stringResource(R.string.master_warning_item3)
+                    ).forEach { item ->
+                        Text(item, color = Color(0xFFCCCCCC), fontSize = 13.sp,
+                            modifier = Modifier.padding(start = 4.dp))
+                    }
+                    // Bloque verde — recomendación
+                    Card(colors = CardDefaults.cardColors(containerColor = Color(0xFF082A08)),
+                        shape = RoundedCornerShape(10.dp),
+                        modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            Text(stringResource(R.string.master_warning_recommendation_title),
+                                color = Color(0xFF00CC66), fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold)
+                            Text(stringResource(R.string.master_warning_recommendation_body),
+                                color = Color(0xFF00CC66), fontSize = 13.sp)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { mostrarAdvertencia = false; procesando = true; onConfirmado(passwordPendiente) },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC)),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+                    Text(stringResource(R.string.master_warning_confirm),
+                        fontWeight = FontWeight.Bold, fontSize = 13.sp, textAlign = TextAlign.Center)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { mostrarAdvertencia = false },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+                    Text(stringResource(R.string.master_warning_back),
+                        color = Color.White, fontSize = 13.sp, textAlign = TextAlign.Center)
+                }
+            }
+        )
     }
 }
 
 // ═══════════════════════════════════════════════════════════
-// PANTALLA INGRESAR CONTRASEÑA MAESTRA (recuperación)
+// PANTALLA INGRESAR MASTER — recuperación Y sesión
 // ═══════════════════════════════════════════════════════════
+// esRecuperacion=true  → restaurar datos desde backup (dispositivo nuevo/reinstalación)
+// esRecuperacion=false → solo verificar y cargar en memoria (reinicio de sesión)
 @Composable
-fun PantallaIngresarMaster(
-    activityScope: CoroutineScope,
-    onConfirmado: (String) -> Unit,
-    onRecuperacionFallida: () -> Unit
-) {
+fun PantallaIngresarMaster(activityScope: CoroutineScope,
+    esRecuperacion: Boolean, onConfirmado: (String) -> Unit) {
     val context = LocalContext.current
     var password by remember { mutableStateOf("") }
     var mostrarPass by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
     var procesando by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .systemBarsPadding(),
-        contentAlignment = Alignment.Center
-    ) {
-        Card(
-            modifier = Modifier.padding(24.dp).fillMaxWidth(),
-            shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))
-        ) {
-            Column(
-                modifier = Modifier.padding(28.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "🔑 Recovery",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Text(
-                    text = "A backup was found. Enter your master password to restore your data.",
-                    fontSize = 13.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
+    val titulo   = if (esRecuperacion) stringResource(R.string.master_recovery_title)
+                   else stringResource(R.string.master_session_title)
+    val subtitulo = if (esRecuperacion) stringResource(R.string.master_recovery_subtitle)
+                    else stringResource(R.string.master_session_subtitle)
+    val btnTexto  = if (esRecuperacion) stringResource(R.string.master_recovery_btn)
+                    else stringResource(R.string.master_session_btn)
+    val errorMsg  = stringResource(R.string.master_recovery_error)
 
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it; error = "" },
-                    label = { Text("Master password", color = Color.Gray) },
-                    visualTransformation = if (mostrarPass) VisualTransformation.None
-                                           else PasswordVisualTransformation(),
+    Box(modifier = Modifier.fillMaxSize().background(Color(0xFF121212)).systemBarsPadding(),
+        contentAlignment = Alignment.Center) {
+        Card(modifier = Modifier.padding(24.dp).fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E))) {
+            Column(modifier = Modifier.padding(28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(titulo, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                Text(subtitulo, fontSize = 13.sp, color = Color.Gray, textAlign = TextAlign.Center)
+                OutlinedTextField(value = password, onValueChange = { password = it; error = "" },
+                    label = { Text(stringResource(R.string.master_field_password), color = Color.Gray) },
+                    visualTransformation = if (mostrarPass) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = campoColores(),
+                    modifier = Modifier.fillMaxWidth(), colors = campoColores(),
                     trailingIcon = {
                         TextButton(onClick = { mostrarPass = !mostrarPass }) {
-                            Text(
-                                text = if (mostrarPass) "Hide" else "Show",
-                                color = Color(0xFF0066CC),
-                                fontSize = 12.sp
-                            )
+                            Text(if (mostrarPass) stringResource(R.string.master_btn_hide)
+                                 else stringResource(R.string.master_btn_show),
+                                color = Color(0xFF0066CC), fontSize = 12.sp)
+                        }
+                    })
+                if (error.isNotEmpty())
+                    Text(error, color = Color(0xFFFF6B6B), fontSize = 13.sp, textAlign = TextAlign.Center)
+                Button(onClick = {
+                    if (password.isBlank()) return@Button
+                    procesando = true
+                    activityScope.launch {
+                        val exito = if (esRecuperacion) {
+                            restaurarDesdeBackup(context, password)
+                        } else {
+                            // Solo verificar contraseña, no restaurar
+                            withContext(Dispatchers.IO) { verificarPasswordMaster(context, password) }
+                        }
+                        withContext(Dispatchers.Main) {
+                            procesando = false
+                            if (exito) onConfirmado(password)
+                            else error = errorMsg
                         }
                     }
-                )
-
-                if (error.isNotEmpty()) {
-                    Text(
-                        text = error,
-                        color = Color(0xFFFF6B6B),
-                        fontSize = 13.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        if (password.isBlank()) return@Button
-                        procesando = true
-                        activityScope.launch {
-                            val exito = verificarYRestaurarRespaldo(context, password)
-                            withContext(Dispatchers.Main) {
-                                procesando = false
-                                if (exito) {
-                                    onConfirmado(password)
-                                } else {
-                                    error = "Incorrect password. Please try again."
-                                }
-                            }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().height(52.dp),
+                }, modifier = Modifier.fillMaxWidth().height(52.dp),
                     enabled = !procesando && password.isNotEmpty(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))
-                ) {
-                    if (procesando) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text("RESTORE DATA", fontWeight = FontWeight.Bold)
-                    }
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))) {
+                    if (procesando) CircularProgressIndicator(color = Color.White,
+                        modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    else Text(btnTexto, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -867,223 +715,119 @@ fun PantallaIngresarMaster(
 }
 
 // ═══════════════════════════════════════════════════════════
-// INDICADOR DE FORTALEZA DE CONTRASEÑA
+// INDICADOR DE FORTALEZA
 // ═══════════════════════════════════════════════════════════
 data class Fortaleza(val nivel: Int, val color: Color, val texto: String)
 
+@Composable
 fun calcularFortaleza(password: String): Fortaleza {
-    var puntos = 0
-    if (password.length >= 8)  puntos++
-    if (password.length >= 12) puntos++
-    if (password.any { it.isDigit() } && password.any { it.isLetter() }) puntos++
-    if (password.any { !it.isLetterOrDigit() }) puntos++
-
-    return when (puntos) {
-        0, 1 -> Fortaleza(1, Color(0xFFFF4444), "Weak")
-        2    -> Fortaleza(2, Color(0xFFCC7700), "Fair")
-        3    -> Fortaleza(3, Color(0xFF4DA6FF), "Good")
-        else -> Fortaleza(4, Color(0xFF00AA66), "Strong")
+    var p = 0
+    if (password.length >= 8) p++
+    if (password.length >= 12) p++
+    if (password.any { it.isDigit() } && password.any { it.isLetter() }) p++
+    if (password.any { !it.isLetterOrDigit() }) p++
+    return when (p) {
+        0, 1 -> Fortaleza(1, Color(0xFFFF4444), stringResource(R.string.master_strength_weak))
+        2    -> Fortaleza(2, Color(0xFFCC7700), stringResource(R.string.master_strength_fair))
+        3    -> Fortaleza(3, Color(0xFF4DA6FF), stringResource(R.string.master_strength_good))
+        else -> Fortaleza(4, Color(0xFF00AA66), stringResource(R.string.master_strength_strong))
     }
 }
 
 // ═══════════════════════════════════════════════════════════
 // BIOMETRÍA NATIVA
 // ═══════════════════════════════════════════════════════════
-fun lanzarBiometria(
-    activity: FragmentActivity,
-    onExito: () -> Unit,
-    onError: (String) -> Unit
-) {
-    val biometricManager = BiometricManager.from(activity)
-    val authenticators =
-        BiometricManager.Authenticators.BIOMETRIC_STRONG or
-                BiometricManager.Authenticators.DEVICE_CREDENTIAL
-
-    when (biometricManager.canAuthenticate(authenticators)) {
+fun lanzarBiometria(activity: FragmentActivity, onExito: () -> Unit, onError: (String) -> Unit) {
+    val mgr = BiometricManager.from(activity)
+    val auth = BiometricManager.Authenticators.BIOMETRIC_STRONG or
+               BiometricManager.Authenticators.DEVICE_CREDENTIAL
+    when (mgr.canAuthenticate(auth)) {
         BiometricManager.BIOMETRIC_SUCCESS -> { }
         BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE ->
             return onError(activity.getString(R.string.biometric_no_hardware))
         BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED ->
             return onError(activity.getString(R.string.biometric_none_enrolled))
-        else ->
-            return onError(activity.getString(R.string.biometric_unavailable))
+        else -> return onError(activity.getString(R.string.biometric_unavailable))
     }
-
-    val executor = ContextCompat.getMainExecutor(activity)
-    val prompt = BiometricPrompt(activity, executor,
+    BiometricPrompt(activity, ContextCompat.getMainExecutor(activity),
         object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationSucceeded(
-                result: BiometricPrompt.AuthenticationResult
-            ) {
-                super.onAuthenticationSucceeded(result)
-                onExito()
+            override fun onAuthenticationSucceeded(r: BiometricPrompt.AuthenticationResult) {
+                super.onAuthenticationSucceeded(r); onExito() }
+            override fun onAuthenticationError(code: Int, str: CharSequence) {
+                super.onAuthenticationError(code, str)
+                if (code == BiometricPrompt.ERROR_USER_CANCELED ||
+                    code == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
+                    code == BiometricPrompt.ERROR_CANCELED) onError("")
+                else onError(activity.getString(R.string.biometric_error_prefix, str))
             }
-            override fun onAuthenticationError(
-                errorCode: Int, errString: CharSequence
-            ) {
-                super.onAuthenticationError(errorCode, errString)
-                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
-                    errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON ||
-                    errorCode == BiometricPrompt.ERROR_CANCELED
-                ) {
-                    onError("")
-                } else {
-                    onError(activity.getString(R.string.biometric_error_prefix, errString))
-                }
-            }
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-            }
-        }
-    )
-
-    val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle(activity.getString(R.string.dialog_biometric_title))
-        .setSubtitle(activity.getString(R.string.dialog_biometric_subtitle))
-        .setAllowedAuthenticators(authenticators)
-        .build()
-
-    prompt.authenticate(promptInfo)
+            override fun onAuthenticationFailed() { super.onAuthenticationFailed() }
+        }).authenticate(BiometricPrompt.PromptInfo.Builder()
+            .setTitle(activity.getString(R.string.dialog_biometric_title))
+            .setSubtitle(activity.getString(R.string.dialog_biometric_subtitle))
+            .setAllowedAuthenticators(auth).build())
 }
 
 // ═══════════════════════════════════════════════════════════
 // PANTALLA MENÚ
 // ═══════════════════════════════════════════════════════════
 @Composable
-fun PantallaMenu(
-    claves: List<Clave>,
-    cargando: Boolean,
-    onNuevo: () -> Unit,
-    onEditar: (Clave) -> Unit,
-    onSalir: () -> Unit
-) {
+fun PantallaMenu(claves: List<Clave>, cargando: Boolean,
+    onNuevo: () -> Unit, onEditar: (Clave) -> Unit, onSalir: () -> Unit) {
     var busqueda by remember { mutableStateOf("") }
-
-    val clavesFiltradas by remember(claves, busqueda) {
+    val filtradas by remember(claves, busqueda) {
         derivedStateOf {
             if (busqueda.isEmpty()) claves
             else claves.filter { it.sitio.contains(busqueda, ignoreCase = true) }
         }
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+    Column(modifier = Modifier.fillMaxSize().background(Color(0xFF121212))
+        .statusBarsPadding().navigationBarsPadding().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = stringResource(R.string.app_name),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Button(
-                onClick = onSalir,
+            verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.app_name), fontSize = 20.sp,
+                fontWeight = FontWeight.Bold, color = Color.White)
+            Button(onClick = onSalir,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBB2222)),
                 contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
-                modifier = Modifier.height(36.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.menu_btn_salir),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                modifier = Modifier.height(36.dp)) {
+                Text(stringResource(R.string.menu_btn_salir), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
-
-        OutlinedTextField(
-            value = busqueda,
-            onValueChange = { busqueda = it },
-            label = { Text(text = stringResource(R.string.menu_search_hint)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            colors = campoColores()
-        )
-
+        OutlinedTextField(value = busqueda, onValueChange = { busqueda = it },
+            label = { Text(stringResource(R.string.menu_search_hint)) },
+            modifier = Modifier.fillMaxWidth(), singleLine = true, colors = campoColores())
         when {
-            cargando -> {
-                Box(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) { CircularProgressIndicator(color = Color(0xFF0066CC)) }
-            }
-            claves.isEmpty() -> {
-                Box(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.menu_empty_list),
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-            clavesFiltradas.isEmpty() -> {
-                Box(
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.menu_no_results, busqueda),
-                        color = Color.Gray,
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-            else -> {
-                LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(items = clavesFiltradas, key = { it.sitio }) { clave ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth().clickable { onEditar(clave) },
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
-                            shape = RoundedCornerShape(12.dp),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = clave.sitio,
-                                    color = Color.White,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Text(text = "›", color = Color.Gray, fontSize = 20.sp)
-                            }
+            cargando -> Box(Modifier.weight(1f).fillMaxWidth(), Alignment.Center) {
+                CircularProgressIndicator(color = Color(0xFF0066CC)) }
+            claves.isEmpty() -> Box(Modifier.weight(1f).fillMaxWidth(), Alignment.Center) {
+                Text(stringResource(R.string.menu_empty_list), color = Color.Gray,
+                    textAlign = TextAlign.Center, fontSize = 14.sp) }
+            filtradas.isEmpty() -> Box(Modifier.weight(1f).fillMaxWidth(), Alignment.Center) {
+                Text(stringResource(R.string.menu_no_results, busqueda), color = Color.Gray,
+                    textAlign = TextAlign.Center, fontSize = 14.sp) }
+            else -> LazyColumn(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                items(filtradas, key = { it.sitio }) { clave ->
+                    Card(modifier = Modifier.fillMaxWidth().clickable { onEditar(clave) },
+                        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)),
+                        shape = RoundedCornerShape(12.dp),
+                        elevation = CardDefaults.cardElevation(2.dp)) {
+                        Row(Modifier.fillMaxWidth().padding(16.dp),
+                            Arrangement.SpaceBetween, Alignment.CenterVertically) {
+                            Text(clave.sitio, color = Color.White, fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium)
+                            Text("›", color = Color.Gray, fontSize = 20.sp)
                         }
                     }
                 }
             }
         }
-
-        Button(
-            onClick = onNuevo,
+        Button(onClick = onNuevo,
             modifier = Modifier.fillMaxWidth().height(52.dp).padding(bottom = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF006633)),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.menu_btn_nueva),
-                fontWeight = FontWeight.Bold,
-                fontSize = 15.sp
-            )
+            shape = RoundedCornerShape(12.dp)) {
+            Text(stringResource(R.string.menu_btn_nueva), fontWeight = FontWeight.Bold, fontSize = 15.sp)
         }
     }
 }
@@ -1092,143 +836,80 @@ fun PantallaMenu(
 // PANTALLA EDITOR
 // ═══════════════════════════════════════════════════════════
 @Composable
-fun PantallaEditor(
-    activityScope: CoroutineScope,
-    claveExistente: Clave?,
-    passwordMaster: String,
-    onGuardar: () -> Unit,
-    onVolver: () -> Unit
-) {
+fun PantallaEditor(activityScope: CoroutineScope, claveExistente: Clave?,
+    passwordMaster: String, onGuardar: () -> Unit, onVolver: () -> Unit) {
     val context = LocalContext.current
     val clipboard = LocalClipboardManager.current
     val esNuevo = claveExistente == null
-
     var sitio    by remember { mutableStateOf(claveExistente?.sitio    ?: "") }
     var usuario  by remember { mutableStateOf(claveExistente?.usuario  ?: "") }
     var password by remember { mutableStateOf(claveExistente?.password ?: "") }
     var extras   by remember { mutableStateOf(claveExistente?.extras   ?: "") }
-    var modoEdicion       by remember { mutableStateOf(esNuevo) }
-    var mostrarPassword   by remember { mutableStateOf(false) }
-    var guardando         by remember { mutableStateOf(false) }
+    var modoEdicion         by remember { mutableStateOf(esNuevo) }
+    var mostrarPassword     by remember { mutableStateOf(false) }
+    var guardando           by remember { mutableStateOf(false) }
     var mostrarConfGuardar  by remember { mutableStateOf(false) }
     var mostrarConfEliminar by remember { mutableStateOf(false) }
-
     val lineasExtras by remember(extras) {
         derivedStateOf { extras.split("\n").filter { it.isNotBlank() } }
     }
 
-    // ── Arquitectura de dos capas ────────────────────────────
-    // Capa 1 (weight=1f): contenido scrollable — título y campos
-    // Capa 2 (fija):      botones siempre visibles en la parte inferior
-    // Esto garantiza acceso a los botones sin importar cuántos
-    // campos EXTRAS tenga la entrada.
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF121212))
-            .statusBarsPadding()
-            .navigationBarsPadding()
-            .padding(horizontal = 16.dp)
-    ) {
-        // ── ZONA SCROLLABLE — título y todos los campos ──────
-        androidx.compose.foundation.rememberScrollState().let { scrollState ->
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(scrollState)
-                    .padding(bottom = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(
-                    text = if (esNuevo) stringResource(R.string.editor_title_nuevo)
-                           else "🔑 ${claveExistente?.sitio}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 4.dp),
-                    textAlign = TextAlign.Center
-                )
+    Column(modifier = Modifier.fillMaxSize().background(Color(0xFF121212))
+        .statusBarsPadding().navigationBarsPadding().padding(horizontal = 16.dp)) {
 
-                CampoEditor(
-                    label = stringResource(R.string.editor_label_sitio),
-                    valor = sitio, habilitado = modoEdicion,
-                    onCambio = { sitio = it },
-                    onCopiar = { clipboard.setText(AnnotatedString(sitio)) },
-                    onPegar  = { clipboard.getText()?.text?.let { sitio = it } }
-                )
-                CampoEditor(
-                    label = stringResource(R.string.editor_label_usuario),
-                    valor = usuario, habilitado = modoEdicion,
-                    onCambio = { usuario = it },
-                    onCopiar = { clipboard.setText(AnnotatedString(usuario)) },
-                    onPegar  = { clipboard.getText()?.text?.let { usuario = it } }
-                )
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = { if (modoEdicion) password = it },
-                    label = { Text(stringResource(R.string.editor_label_pass), color = Color.Gray) },
-                    enabled = modoEdicion,
-                    visualTransformation = if (mostrarPassword) VisualTransformation.None
-                                           else PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = campoColores(),
-                    trailingIcon = {
-                        Row(
-                            modifier = Modifier.padding(end = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextButton(onClick = { mostrarPassword = !mostrarPassword }) {
-                                Text(
-                                    text = if (mostrarPassword) stringResource(R.string.editor_btn_ocultar)
-                                           else stringResource(R.string.editor_btn_ver),
-                                    color = Color(0xFF0066CC), fontSize = 12.sp
-                                )
-                            }
-                            if (!modoEdicion) {
-                                TextButton(onClick = { clipboard.setText(AnnotatedString(password)) }) {
-                                    Text(stringResource(R.string.editor_btn_copiar),
-                                        color = Color(0xFFCC7700), fontSize = 12.sp)
-                                }
-                            }
-                        }
+        // ── ZONA SCROLLABLE ──────────────────────────────────
+        Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())
+            .padding(bottom = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text(if (esNuevo) stringResource(R.string.editor_title_nuevo) else "🔑 ${claveExistente?.sitio}",
+                fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White,
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 4.dp),
+                textAlign = TextAlign.Center)
+            CampoEditor(stringResource(R.string.editor_label_sitio), sitio, modoEdicion,
+                { sitio = it }, { clipboard.setText(AnnotatedString(sitio)) },
+                { clipboard.getText()?.text?.let { sitio = it } })
+            CampoEditor(stringResource(R.string.editor_label_usuario), usuario, modoEdicion,
+                { usuario = it }, { clipboard.setText(AnnotatedString(usuario)) },
+                { clipboard.getText()?.text?.let { usuario = it } })
+            OutlinedTextField(value = password, onValueChange = { if (modoEdicion) password = it },
+                label = { Text(stringResource(R.string.editor_label_pass), color = Color.Gray) },
+                enabled = modoEdicion,
+                visualTransformation = if (mostrarPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(), colors = campoColores(),
+                trailingIcon = {
+                    Row(Modifier.padding(end = 4.dp), Arrangement.spacedBy(4.dp), Alignment.CenterVertically) {
+                        TextButton(onClick = { mostrarPassword = !mostrarPassword }) {
+                            Text(if (mostrarPassword) stringResource(R.string.editor_btn_ocultar)
+                                 else stringResource(R.string.editor_btn_ver),
+                                color = Color(0xFF0066CC), fontSize = 12.sp) }
+                        if (!modoEdicion) TextButton(onClick = { clipboard.setText(AnnotatedString(password)) }) {
+                            Text(stringResource(R.string.editor_btn_copiar),
+                                color = Color(0xFFCC7700), fontSize = 12.sp) }
                     }
-                )
-
-                if (modoEdicion) {
-                    OutlinedTextField(
-                        value = extras, onValueChange = { extras = it },
-                        label = { Text(stringResource(R.string.editor_label_extras_edit), color = Color.Gray) },
-                        modifier = Modifier.fillMaxWidth(), maxLines = 4, colors = campoColores(),
-                        trailingIcon = {
-                            TextButton(onClick = { clipboard.getText()?.text?.let { extras = it } }) {
-                                Text(stringResource(R.string.editor_btn_pegar),
-                                    color = Color(0xFF00AA66), fontSize = 12.sp)
-                            }
-                        }
-                    )
+                })
+            if (modoEdicion) {
+                OutlinedTextField(value = extras, onValueChange = { extras = it },
+                    label = { Text(stringResource(R.string.editor_label_extras_edit), color = Color.Gray) },
+                    modifier = Modifier.fillMaxWidth(), maxLines = 4, colors = campoColores(),
+                    trailingIcon = {
+                        TextButton(onClick = { clipboard.getText()?.text?.let { extras = it } }) {
+                            Text(stringResource(R.string.editor_btn_pegar),
+                                color = Color(0xFF00AA66), fontSize = 12.sp) }
+                    })
+            } else {
+                if (lineasExtras.isEmpty()) {
+                    OutlinedTextField(value = "", onValueChange = {},
+                        label = { Text(stringResource(R.string.editor_label_extras_view), color = Color.Gray) },
+                        enabled = false, modifier = Modifier.fillMaxWidth(), colors = campoColores())
                 } else {
-                    if (lineasExtras.isEmpty()) {
-                        OutlinedTextField(
-                            value = "", onValueChange = {},
-                            label = { Text(stringResource(R.string.editor_label_extras_view), color = Color.Gray) },
-                            enabled = false, modifier = Modifier.fillMaxWidth(), colors = campoColores()
-                        )
-                    } else {
-                        lineasExtras.forEachIndexed { i, linea ->
-                            OutlinedTextField(
-                                value = linea, onValueChange = {},
-                                label = { Text("${stringResource(R.string.editor_label_extras_view)} (${i + 1})", color = Color.Gray) },
-                                enabled = false, modifier = Modifier.fillMaxWidth(), colors = campoColores(),
-                                trailingIcon = {
-                                    TextButton(onClick = { clipboard.setText(AnnotatedString(linea)) }) {
-                                        Text(stringResource(R.string.editor_btn_copiar),
-                                            color = Color(0xFFCC7700), fontSize = 12.sp)
-                                    }
-                                }
-                            )
-                        }
+                    lineasExtras.forEachIndexed { i, linea ->
+                        OutlinedTextField(value = linea, onValueChange = {},
+                            label = { Text("${stringResource(R.string.editor_label_extras_view)} (${i + 1})", color = Color.Gray) },
+                            enabled = false, modifier = Modifier.fillMaxWidth(), colors = campoColores(),
+                            trailingIcon = {
+                                TextButton(onClick = { clipboard.setText(AnnotatedString(linea)) }) {
+                                    Text(stringResource(R.string.editor_btn_copiar),
+                                        color = Color(0xFFCC7700), fontSize = 12.sp) }
+                            })
                     }
                 }
             }
@@ -1236,114 +917,65 @@ fun PantallaEditor(
 
         // ── ZONA FIJA — botones siempre visibles ─────────────
         HorizontalDivider(color = Color(0xFF2A2A2A), thickness = 1.dp)
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            OutlinedButton(onClick = onVolver, modifier = Modifier.weight(1f).height(50.dp)) {
-                Text(stringResource(R.string.editor_btn_volver), color = Color.White)
-            }
-            if (!esNuevo && !modoEdicion) {
-                Button(
-                    onClick = { modoEdicion = true },
-                    modifier = Modifier.weight(1f).height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCC7700))
-                ) { Text(stringResource(R.string.editor_btn_modificar), fontWeight = FontWeight.Bold) }
-            }
-            if (modoEdicion) {
-                Button(
-                    onClick = { if (sitio.isNotBlank() && !guardando) mostrarConfGuardar = true },
+        Row(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedButton(onClick = onVolver, Modifier.weight(1f).height(50.dp)) {
+                Text(stringResource(R.string.editor_btn_volver), color = Color.White) }
+            if (!esNuevo && !modoEdicion)
+                Button(onClick = { modoEdicion = true }, Modifier.weight(1f).height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFCC7700))) {
+                    Text(stringResource(R.string.editor_btn_modificar), fontWeight = FontWeight.Bold) }
+            if (modoEdicion)
+                Button(onClick = { if (sitio.isNotBlank() && !guardando) mostrarConfGuardar = true },
                     modifier = Modifier.weight(1f).height(50.dp),
                     enabled = !guardando && sitio.isNotBlank(),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))
-                ) {
-                    if (guardando) {
-                        CircularProgressIndicator(color = Color.White,
-                            modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
-                    } else {
-                        Text(stringResource(R.string.editor_btn_guardar), fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0066CC))) {
+                    if (guardando) CircularProgressIndicator(color = Color.White,
+                        modifier = Modifier.size(18.dp), strokeWidth = 2.dp)
+                    else Text(stringResource(R.string.editor_btn_guardar), fontWeight = FontWeight.Bold) }
         }
-
-        if (!esNuevo && !modoEdicion) {
-            TextButton(
-                onClick = { mostrarConfEliminar = true },
-                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)
-            ) {
+        if (!esNuevo && !modoEdicion)
+            TextButton(onClick = { mostrarConfEliminar = true },
+                modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
                 Text(stringResource(R.string.editor_link_eliminar),
-                    color = Color(0xFFFF4444), fontSize = 14.sp)
-            }
-        }
+                    color = Color(0xFFFF4444), fontSize = 14.sp) }
     }
 
     if (mostrarConfGuardar) {
-        AlertDialog(
-            onDismissRequest = { if (!guardando) mostrarConfGuardar = false },
+        AlertDialog(onDismissRequest = { if (!guardando) mostrarConfGuardar = false },
             title = { Text(stringResource(R.string.dialog_confirm_title), fontWeight = FontWeight.Bold) },
             text  = { Text(stringResource(R.string.dialog_confirm_save_text, sitio)) },
             confirmButton = {
                 TextButton(onClick = {
-                    if (!guardando) {
-                        guardando = true
-                        guardarClaveAsync(
-                            scope = activityScope, context = context,
-                            clave = Clave(sitio, usuario, password, extras),
-                            passwordMaster = passwordMaster
-                        ) {
-                            guardando = false
-                            mostrarConfGuardar = false
-                            onGuardar()
-                        }
-                    }
+                    if (!guardando) { guardando = true
+                        guardarClaveAsync(activityScope, context,
+                            Clave(sitio, usuario, password, extras), passwordMaster) {
+                            guardando = false; mostrarConfGuardar = false; onGuardar() } }
                 }) { Text(stringResource(R.string.dialog_btn_si), fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
                 TextButton(onClick = { if (!guardando) mostrarConfGuardar = false }) {
-                    Text(stringResource(R.string.dialog_btn_no), color = Color.Gray)
-                }
-            }
-        )
+                    Text(stringResource(R.string.dialog_btn_no), color = Color.Gray) }
+            })
     }
 
     if (mostrarConfEliminar) {
-        AlertDialog(
-            onDismissRequest = { mostrarConfEliminar = false },
-            title = {
-                Text(stringResource(R.string.dialog_delete_title),
-                    fontWeight = FontWeight.Bold, color = Color(0xFFFF4444))
-            },
-            text = {
-                Text(stringResource(R.string.dialog_delete_text, claveExistente?.sitio ?: ""))
-            },
+        AlertDialog(onDismissRequest = { mostrarConfEliminar = false },
+            title = { Text(stringResource(R.string.dialog_delete_title),
+                fontWeight = FontWeight.Bold, color = Color(0xFFFF4444)) },
+            text = { Text(stringResource(R.string.dialog_delete_text, claveExistente?.sitio ?: "")) },
             confirmButton = {
                 TextButton(onClick = {
-                    val sitioAEliminar = claveExistente?.sitio
-                    if (sitioAEliminar != null) {
-                        eliminarClaveAsync(
-                            scope = activityScope, context = context,
-                            sitio = sitioAEliminar,
-                            passwordMaster = passwordMaster
-                        ) {
-                            mostrarConfEliminar = false
-                            onVolver()
-                        }
-                    }
-                }) {
-                    Text(stringResource(R.string.dialog_btn_eliminar),
-                        color = Color(0xFFFF4444), fontWeight = FontWeight.Bold)
-                }
+                    claveExistente?.sitio?.let { s ->
+                        eliminarClaveAsync(activityScope, context, s, passwordMaster) {
+                            mostrarConfEliminar = false; onVolver() } }
+                }) { Text(stringResource(R.string.dialog_btn_eliminar),
+                    color = Color(0xFFFF4444), fontWeight = FontWeight.Bold) }
             },
             dismissButton = {
                 TextButton(onClick = { mostrarConfEliminar = false }) {
-                    Text(stringResource(R.string.dialog_btn_cancelar), color = Color.Gray)
-                }
-            }
-        )
+                    Text(stringResource(R.string.dialog_btn_cancelar), color = Color.Gray) }
+            })
     }
 }
 
@@ -1351,41 +983,24 @@ fun PantallaEditor(
 // COMPONENTES REUTILIZABLES
 // ═══════════════════════════════════════════════════════════
 @Composable
-fun CampoEditor(
-    label: String, valor: String, habilitado: Boolean,
-    onCambio: (String) -> Unit, onCopiar: () -> Unit, onPegar: () -> Unit
-) {
-    OutlinedTextField(
-        value = valor,
-        onValueChange = { if (habilitado) onCambio(it) },
-        label = { Text(label, color = Color.Gray) },
-        enabled = habilitado, singleLine = true,
-        modifier = Modifier.fillMaxWidth(), colors = campoColores(),
+fun CampoEditor(label: String, valor: String, habilitado: Boolean,
+    onCambio: (String) -> Unit, onCopiar: () -> Unit, onPegar: () -> Unit) {
+    OutlinedTextField(value = valor, onValueChange = { if (habilitado) onCambio(it) },
+        label = { Text(label, color = Color.Gray) }, enabled = habilitado,
+        singleLine = true, modifier = Modifier.fillMaxWidth(), colors = campoColores(),
         trailingIcon = {
-            if (habilitado) {
-                TextButton(onClick = onPegar) {
-                    Text(stringResource(R.string.editor_btn_pegar),
-                        color = Color(0xFF00AA66), fontSize = 12.sp)
-                }
-            } else {
-                TextButton(onClick = onCopiar) {
-                    Text(stringResource(R.string.editor_btn_copy_short),
-                        color = Color(0xFFCC7700), fontSize = 12.sp)
-                }
+            if (habilitado) TextButton(onClick = onPegar) {
+                Text(stringResource(R.string.editor_btn_pegar), color = Color(0xFF00AA66), fontSize = 12.sp)
+            } else TextButton(onClick = onCopiar) {
+                Text(stringResource(R.string.editor_btn_copy_short), color = Color(0xFFCC7700), fontSize = 12.sp)
             }
-        }
-    )
+        })
 }
 
 @Composable
 fun campoColores() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor    = Color.White,
-    unfocusedTextColor  = Color.White,
-    disabledTextColor   = Color(0xFFCCCCCC),
-    focusedLabelColor   = Color(0xFF0066CC),
-    unfocusedLabelColor = Color.Gray,
-    disabledLabelColor  = Color.Gray,
-    focusedBorderColor  = Color(0xFF0066CC),
-    unfocusedBorderColor  = Color(0xFF444444),
-    disabledBorderColor   = Color(0xFF333333)
-)
+    focusedTextColor = Color.White, unfocusedTextColor = Color.White,
+    disabledTextColor = Color(0xFFCCCCCC), focusedLabelColor = Color(0xFF0066CC),
+    unfocusedLabelColor = Color.Gray, disabledLabelColor = Color.Gray,
+    focusedBorderColor = Color(0xFF0066CC), unfocusedBorderColor = Color(0xFF444444),
+    disabledBorderColor = Color(0xFF333333))

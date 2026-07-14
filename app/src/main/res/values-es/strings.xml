@@ -1,36 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Gestor de Contraseñas</string>
-
-    <!-- Notificaciones -->
     <string name="notification_channel_name">Seguridad de la App</string>
     <string name="notification_channel_desc">Notificaciones de cierre por inactividad</string>
     <string name="notification_title">⚠️ Gestor Bloqueado</string>
     <string name="notification_text">Sesión cerrada automáticamente por inactividad.</string>
-
-    <!-- Pantalla Login -->
     <string name="login_title">🔐 Gestor de Contraseñas</string>
     <string name="login_subtitle">Verifica tu identidad para continuar</string>
     <string name="login_btn">AUTENTICAR CON HUELLA / PIN</string>
-
-    <!-- Mensajes biométricos -->
     <string name="biometric_no_hardware">Este dispositivo no tiene sensor biométrico</string>
     <string name="biometric_none_enrolled">No hay huella dactilar ni PIN configurado en este dispositivo</string>
     <string name="biometric_unavailable">Autenticación biométrica no disponible</string>
     <string name="biometric_error_prefix">Error de autenticación: %1$s</string>
-
-    <!-- Diálogo biométrico -->
     <string name="dialog_biometric_title">Gestor de Contraseñas</string>
     <string name="dialog_biometric_subtitle">Usa tu huella dactilar o el PIN del dispositivo</string>
-
-    <!-- Pantalla Menú -->
     <string name="menu_btn_salir">SALIR</string>
     <string name="menu_search_hint">🔍 Buscar sitio</string>
     <string name="menu_empty_list">No hay contraseñas guardadas.\nToca + NUEVA CONTRASEÑA para empezar.</string>
     <string name="menu_btn_nueva">+ NUEVA CONTRASEÑA</string>
     <string name="menu_no_results">No se encontraron resultados para \"%1$s\"</string>
-
-    <!-- Pantalla Editor -->
     <string name="editor_title_nuevo">✏️ Nueva Contraseña</string>
     <string name="editor_label_sitio">SITIO</string>
     <string name="editor_label_usuario">USUARIO</string>
@@ -46,8 +34,6 @@
     <string name="editor_btn_modificar">MODIFICAR</string>
     <string name="editor_btn_guardar">GUARDAR</string>
     <string name="editor_link_eliminar">🗑 Eliminar esta contraseña</string>
-
-    <!-- Diálogos de confirmación -->
     <string name="dialog_confirm_title">Confirmar</string>
     <string name="dialog_confirm_save_text">¿Deseas guardar los cambios para \"%1$s\"?</string>
     <string name="dialog_delete_title">⚠️ Eliminar contraseña</string>
@@ -56,4 +42,34 @@
     <string name="dialog_btn_no">NO</string>
     <string name="dialog_btn_eliminar">ELIMINAR</string>
     <string name="dialog_btn_cancelar">CANCELAR</string>
+    <string name="master_warning_title">⚠️ ADVERTENCIA CRÍTICA</string>
+    <string name="master_warning_body">Tu contraseña maestra NO puede ser recuperada por nadie, incluyendo al desarrollador.</string>
+    <string name="master_warning_if_forget">Si olvidas o pierdes esta contraseña:</string>
+    <string name="master_warning_item1">❌  Tu respaldo no podrá ser descifrado</string>
+    <string name="master_warning_item2">❌  La recuperación en un dispositivo nuevo será imposible</string>
+    <string name="master_warning_item3">❌  No existe opción de restablecimiento o recuperación</string>
+    <string name="master_warning_recommendation_title">✅  Recomendación</string>
+    <string name="master_warning_recommendation_body">Anota tu contraseña y guárdala en un lugar físico seguro antes de continuar.</string>
+    <string name="master_warning_confirm">ENTENDIDO — CONTINUAR</string>
+    <string name="master_warning_back">VOLVER — CAMBIAR CONTRASEÑA</string>
+    <string name="master_create_title">🔑 Contraseña Maestra</string>
+    <string name="master_create_subtitle">Crea una contraseña maestra para cifrar tu respaldo.\nLa necesitarás para recuperar tus datos en un dispositivo nuevo.</string>
+    <string name="master_field_password">Contraseña maestra</string>
+    <string name="master_field_confirm">Confirmar contraseña</string>
+    <string name="master_btn_create">CREAR Y CONTINUAR</string>
+    <string name="master_error_min_length">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="master_error_mismatch">Las contraseñas no coinciden</string>
+    <string name="master_strength_weak">Débil</string>
+    <string name="master_strength_fair">Regular</string>
+    <string name="master_strength_good">Buena</string>
+    <string name="master_strength_strong">Fuerte</string>
+    <string name="master_recovery_title">🔑 Recuperación</string>
+    <string name="master_recovery_subtitle">Se encontró un respaldo. Ingresa tu contraseña maestra para restaurar tus datos.</string>
+    <string name="master_recovery_btn">RESTAURAR DATOS</string>
+    <string name="master_recovery_error">Contraseña incorrecta. Por favor intenta de nuevo.</string>
+    <string name="master_session_title">🔑 Ingresa tu Contraseña Maestra</string>
+    <string name="master_session_subtitle">Ingresa tu contraseña maestra para desbloquear esta sesión.</string>
+    <string name="master_session_btn">DESBLOQUEAR</string>
+    <string name="master_btn_show">Ver</string>
+    <string name="master_btn_hide">Ocultar</string>
 </resources>

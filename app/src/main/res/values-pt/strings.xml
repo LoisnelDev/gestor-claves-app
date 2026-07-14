@@ -1,36 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Gerenciador de senhas</string>
-
-    <!-- Notificações -->
     <string name="notification_channel_name">Segurança do aplicativo</string>
     <string name="notification_channel_desc">Notificações de segurança por tempo limite</string>
     <string name="notification_title">⚠️ Gerenciador bloqueado</string>
     <string name="notification_text">Sessão encerrada automaticamente por inatividade.</string>
-
-    <!-- Tela de login -->
     <string name="login_title">🔐 Gerenciador de senhas</string>
     <string name="login_subtitle">Verifique sua identidade para continuar</string>
     <string name="login_btn">AUTENTICAR COM IMPRESSÃO DIGITAL / PIN</string>
-
-    <!-- Mensagens biométricas -->
     <string name="biometric_no_hardware">Este dispositivo não possui sensor biométrico</string>
     <string name="biometric_none_enrolled">Nenhuma impressão digital ou PIN configurado neste dispositivo</string>
     <string name="biometric_unavailable">Autenticação biométrica não disponível</string>
     <string name="biometric_error_prefix">Erro de autenticação: %1$s</string>
-
-    <!-- Diálogo biométrico -->
     <string name="dialog_biometric_title">Gerenciador de senhas</string>
     <string name="dialog_biometric_subtitle">Use sua impressão digital ou o PIN do dispositivo</string>
-
-    <!-- Tela do menu -->
     <string name="menu_btn_salir">SAIR</string>
     <string name="menu_search_hint">🔍 Pesquisar site</string>
     <string name="menu_empty_list">Nenhuma senha salva.\nToque em + NOVA SENHA para começar.</string>
     <string name="menu_btn_nueva">+ NOVA SENHA</string>
     <string name="menu_no_results">Nenhum resultado encontrado para \"%1$s\"</string>
-
-    <!-- Tela do editor -->
     <string name="editor_title_nuevo">✏️ Nova senha</string>
     <string name="editor_label_sitio">SITE</string>
     <string name="editor_label_usuario">USUÁRIO</string>
@@ -46,8 +34,6 @@
     <string name="editor_btn_modificar">MODIFICAR</string>
     <string name="editor_btn_guardar">SALVAR</string>
     <string name="editor_link_eliminar">🗑 Excluir esta senha</string>
-
-    <!-- Diálogos de confirmação -->
     <string name="dialog_confirm_title">Confirmar</string>
     <string name="dialog_confirm_save_text">Deseja salvar as alterações para \"%1$s\"?</string>
     <string name="dialog_delete_title">⚠️ Excluir senha</string>
@@ -56,4 +42,34 @@
     <string name="dialog_btn_no">NÃO</string>
     <string name="dialog_btn_eliminar">EXCLUIR</string>
     <string name="dialog_btn_cancelar">CANCELAR</string>
+    <string name="master_warning_title">⚠️ AVISO CRÍTICO</string>
+    <string name="master_warning_body">Sua senha mestra NÃO pode ser recuperada por ninguém, incluindo o desenvolvedor.</string>
+    <string name="master_warning_if_forget">Se você esquecer ou perder esta senha:</string>
+    <string name="master_warning_item1">❌  Seu backup não poderá ser descriptografado</string>
+    <string name="master_warning_item2">❌  A recuperação em um novo dispositivo será impossível</string>
+    <string name="master_warning_item3">❌  Não há opção de redefinição ou recuperação</string>
+    <string name="master_warning_recommendation_title">✅  Recomendação</string>
+    <string name="master_warning_recommendation_body">Anote sua senha e guarde-a em um local físico seguro antes de continuar.</string>
+    <string name="master_warning_confirm">ENTENDI — CONTINUAR</string>
+    <string name="master_warning_back">VOLTAR — ALTERAR SENHA</string>
+    <string name="master_create_title">🔑 Senha Mestra</string>
+    <string name="master_create_subtitle">Crie uma senha mestra para criptografar seu backup.\nVocê precisará dela para recuperar seus dados em um novo dispositivo.</string>
+    <string name="master_field_password">Senha mestra</string>
+    <string name="master_field_confirm">Confirmar senha</string>
+    <string name="master_btn_create">CRIAR E CONTINUAR</string>
+    <string name="master_error_min_length">A senha deve ter pelo menos 8 caracteres</string>
+    <string name="master_error_mismatch">As senhas não coincidem</string>
+    <string name="master_strength_weak">Fraca</string>
+    <string name="master_strength_fair">Regular</string>
+    <string name="master_strength_good">Boa</string>
+    <string name="master_strength_strong">Forte</string>
+    <string name="master_recovery_title">🔑 Recuperação</string>
+    <string name="master_recovery_subtitle">Um backup foi encontrado. Digite sua senha mestra para restaurar seus dados.</string>
+    <string name="master_recovery_btn">RESTAURAR DADOS</string>
+    <string name="master_recovery_error">Senha incorreta. Por favor, tente novamente.</string>
+    <string name="master_session_title">🔑 Digite a Senha Mestra</string>
+    <string name="master_session_subtitle">Digite sua senha mestra para desbloquear esta sessão.</string>
+    <string name="master_session_btn">DESBLOQUEAR</string>
+    <string name="master_btn_show">Mostrar</string>
+    <string name="master_btn_hide">Ocultar</string>
 </resources>

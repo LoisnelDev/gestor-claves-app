@@ -1,36 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Gestionnaire de mots de passe</string>
-
-    <!-- Notifications -->
     <string name="notification_channel_name">Sécurité de l\'application</string>
     <string name="notification_channel_desc">Notifications de sécurité en cas d\'expiration</string>
     <string name="notification_title">⚠️ Gestionnaire verrouillé</string>
     <string name="notification_text">Session fermée automatiquement en raison d\'inactivité.</string>
-
-    <!-- Écran de connexion -->
     <string name="login_title">🔐 Gestionnaire de mots de passe</string>
     <string name="login_subtitle">Vérifiez votre identité pour continuer</string>
     <string name="login_btn">S\'AUTHENTIFIER AVEC EMPREINTE / PIN</string>
-
-    <!-- Messages biométriques -->
     <string name="biometric_no_hardware">Cet appareil ne dispose pas de capteur biométrique</string>
     <string name="biometric_none_enrolled">Aucune empreinte digitale ou PIN configuré sur cet appareil</string>
     <string name="biometric_unavailable">Authentification biométrique non disponible</string>
     <string name="biometric_error_prefix">Erreur d\'authentification : %1$s</string>
-
-    <!-- Boîte de dialogue biométrique -->
     <string name="dialog_biometric_title">Gestionnaire de mots de passe</string>
     <string name="dialog_biometric_subtitle">Utilisez votre empreinte digitale ou le PIN de l\'appareil</string>
-
-    <!-- Écran du menu -->
     <string name="menu_btn_salir">DÉCONNEXION</string>
     <string name="menu_search_hint">🔍 Rechercher un site</string>
     <string name="menu_empty_list">Aucun mot de passe enregistré.\nAppuyez sur + NOUVEAU MOT DE PASSE pour commencer.</string>
     <string name="menu_btn_nueva">+ NOUVEAU MOT DE PASSE</string>
     <string name="menu_no_results">Aucun résultat trouvé pour \"%1$s\"</string>
-
-    <!-- Écran d\'édition -->
     <string name="editor_title_nuevo">✏️ Nouveau mot de passe</string>
     <string name="editor_label_sitio">SITE</string>
     <string name="editor_label_usuario">UTILISATEUR</string>
@@ -46,8 +34,6 @@
     <string name="editor_btn_modificar">MODIFIER</string>
     <string name="editor_btn_guardar">ENREGISTRER</string>
     <string name="editor_link_eliminar">🗑 Supprimer ce mot de passe</string>
-
-    <!-- Boîtes de dialogue de confirmation -->
     <string name="dialog_confirm_title">Confirmer</string>
     <string name="dialog_confirm_save_text">Voulez-vous enregistrer les modifications pour \"%1$s\" ?</string>
     <string name="dialog_delete_title">⚠️ Supprimer le mot de passe</string>
@@ -56,4 +42,34 @@
     <string name="dialog_btn_no">NON</string>
     <string name="dialog_btn_eliminar">SUPPRIMER</string>
     <string name="dialog_btn_cancelar">ANNULER</string>
+    <string name="master_warning_title">⚠️ AVERTISSEMENT CRITIQUE</string>
+    <string name="master_warning_body">Votre mot de passe maître NE PEUT PAS être récupéré par quiconque, y compris le développeur.</string>
+    <string name="master_warning_if_forget">Si vous oubliez ou perdez ce mot de passe :</string>
+    <string name="master_warning_item1">❌  Votre sauvegarde ne pourra pas être déchiffrée</string>
+    <string name="master_warning_item2">❌  La récupération sur un nouvel appareil sera impossible</string>
+    <string name="master_warning_item3">❌  Il n\'y a pas d\'option de réinitialisation ou de récupération</string>
+    <string name="master_warning_recommendation_title">✅  Recommandation</string>
+    <string name="master_warning_recommendation_body">Notez votre mot de passe et conservez-le dans un endroit physique sûr avant de continuer.</string>
+    <string name="master_warning_confirm">JE COMPRENDS — CONTINUER</string>
+    <string name="master_warning_back">RETOUR — CHANGER LE MOT DE PASSE</string>
+    <string name="master_create_title">🔑 Mot de passe maître</string>
+    <string name="master_create_subtitle">Créez un mot de passe maître pour chiffrer votre sauvegarde.\nVous en aurez besoin pour récupérer vos données sur un nouvel appareil.</string>
+    <string name="master_field_password">Mot de passe maître</string>
+    <string name="master_field_confirm">Confirmer le mot de passe</string>
+    <string name="master_btn_create">CRÉER ET CONTINUER</string>
+    <string name="master_error_min_length">Le mot de passe doit comporter au moins 8 caractères</string>
+    <string name="master_error_mismatch">Les mots de passe ne correspondent pas</string>
+    <string name="master_strength_weak">Faible</string>
+    <string name="master_strength_fair">Passable</string>
+    <string name="master_strength_good">Bon</string>
+    <string name="master_strength_strong">Fort</string>
+    <string name="master_recovery_title">🔑 Récupération</string>
+    <string name="master_recovery_subtitle">Une sauvegarde a été trouvée. Entrez votre mot de passe maître pour restaurer vos données.</string>
+    <string name="master_recovery_btn">RESTAURER LES DONNÉES</string>
+    <string name="master_recovery_error">Mot de passe incorrect. Veuillez réessayer.</string>
+    <string name="master_session_title">🔑 Entrez le mot de passe maître</string>
+    <string name="master_session_subtitle">Entrez votre mot de passe maître pour déverrouiller cette session.</string>
+    <string name="master_session_btn">DÉVERROUILLER</string>
+    <string name="master_btn_show">Afficher</string>
+    <string name="master_btn_hide">Masquer</string>
 </resources>

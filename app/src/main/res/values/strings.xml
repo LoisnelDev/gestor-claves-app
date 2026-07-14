@@ -1,36 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Password Manager</string>
-
-    <!-- Notifications -->
     <string name="notification_channel_name">App Security</string>
     <string name="notification_channel_desc">Security timeout notifications</string>
     <string name="notification_title">⚠️ Manager Locked</string>
     <string name="notification_text">Session automatically closed due to inactivity.</string>
-
-    <!-- Login screen -->
     <string name="login_title">🔐 Password Manager</string>
     <string name="login_subtitle">Verify your identity to continue</string>
     <string name="login_btn">AUTHENTICATE WITH FINGERPRINT / PIN</string>
-
-    <!-- Biometric messages -->
     <string name="biometric_no_hardware">This device does not have a biometric sensor</string>
     <string name="biometric_none_enrolled">No fingerprint or PIN configured on this device</string>
     <string name="biometric_unavailable">Biometric authentication unavailable</string>
     <string name="biometric_error_prefix">Authentication error: %1$s</string>
-
-    <!-- Biometric dialog -->
     <string name="dialog_biometric_title">Password Manager</string>
     <string name="dialog_biometric_subtitle">Use your fingerprint or device PIN</string>
-
-    <!-- Menu screen -->
     <string name="menu_btn_salir">LOGOUT</string>
     <string name="menu_search_hint">🔍 Search site</string>
     <string name="menu_empty_list">No saved passwords.\nTap + NEW PASSWORD to start.</string>
     <string name="menu_btn_nueva">+ NEW PASSWORD</string>
     <string name="menu_no_results">No results found for \"%1$s\"</string>
-
-    <!-- Editor screen -->
     <string name="editor_title_nuevo">✏️ New Password</string>
     <string name="editor_label_sitio">SITE</string>
     <string name="editor_label_usuario">USER</string>
@@ -46,8 +34,6 @@
     <string name="editor_btn_modificar">MODIFY</string>
     <string name="editor_btn_guardar">SAVE</string>
     <string name="editor_link_eliminar">🗑 Delete this password</string>
-
-    <!-- Confirmation dialogs -->
     <string name="dialog_confirm_title">Confirm</string>
     <string name="dialog_confirm_save_text">Do you want to save changes for \"%1$s\"?</string>
     <string name="dialog_delete_title">⚠️ Delete password</string>
@@ -56,4 +42,34 @@
     <string name="dialog_btn_no">NO</string>
     <string name="dialog_btn_eliminar">DELETE</string>
     <string name="dialog_btn_cancelar">CANCEL</string>
+    <string name="master_warning_title">⚠️ CRITICAL WARNING</string>
+    <string name="master_warning_body">Your master password CANNOT be recovered by anyone, including the developer.</string>
+    <string name="master_warning_if_forget">If you forget or lose this password:</string>
+    <string name="master_warning_item1">❌  Your backup cannot be decrypted</string>
+    <string name="master_warning_item2">❌  Recovery on a new device will be impossible</string>
+    <string name="master_warning_item3">❌  There is no reset or recovery option</string>
+    <string name="master_warning_recommendation_title">✅  Recommendation</string>
+    <string name="master_warning_recommendation_body">Write down your password and store it in a safe physical location before continuing.</string>
+    <string name="master_warning_confirm">I UNDERSTAND — CONTINUE</string>
+    <string name="master_warning_back">GO BACK — CHANGE PASSWORD</string>
+    <string name="master_create_title">🔑 Master Password</string>
+    <string name="master_create_subtitle">Create a master password to encrypt your backup.\nYou will need it to recover your data on a new device.</string>
+    <string name="master_field_password">Master password</string>
+    <string name="master_field_confirm">Confirm password</string>
+    <string name="master_btn_create">CREATE AND CONTINUE</string>
+    <string name="master_error_min_length">Password must be at least 8 characters</string>
+    <string name="master_error_mismatch">Passwords do not match</string>
+    <string name="master_strength_weak">Weak</string>
+    <string name="master_strength_fair">Fair</string>
+    <string name="master_strength_good">Good</string>
+    <string name="master_strength_strong">Strong</string>
+    <string name="master_recovery_title">🔑 Recovery</string>
+    <string name="master_recovery_subtitle">A backup was found. Enter your master password to restore your data.</string>
+    <string name="master_recovery_btn">RESTORE DATA</string>
+    <string name="master_recovery_error">Incorrect password. Please try again.</string>
+    <string name="master_session_title">🔑 Enter Master Password</string>
+    <string name="master_session_subtitle">Enter your master password to unlock this session.</string>
+    <string name="master_session_btn">UNLOCK</string>
+    <string name="master_btn_show">Show</string>
+    <string name="master_btn_hide">Hide</string>
 </resources>
