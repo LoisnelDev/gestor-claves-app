@@ -551,12 +551,16 @@ fun PantallaCrearMaster(onConfirmado: (String) -> Unit) {
                     }
                     Text(f.texto, color = f.color, fontSize = 12.sp, modifier = Modifier.fillMaxWidth())
                 }
+                // CORRECCIÓN: stringResource() no puede llamarse dentro de lambdas onClick
+                val errMinLength = stringResource(R.string.master_error_min_length)
+                val errMismatch  = stringResource(R.string.master_error_mismatch)
+
                 if (error.isNotEmpty())
                     Text(error, color = Color(0xFFFF6B6B), fontSize = 13.sp, textAlign = TextAlign.Center)
                 Button(onClick = {
                     when {
-                        password.length < 8 -> error = stringResource(R.string.master_error_min_length)
-                        password != confirmar -> error = stringResource(R.string.master_error_mismatch)
+                        password.length < 8 -> error = errMinLength
+                        password != confirmar -> error = errMismatch
                         else -> { passwordPendiente = password; mostrarAdvertencia = true }
                     }
                 }, modifier = Modifier.fillMaxWidth().height(52.dp),
