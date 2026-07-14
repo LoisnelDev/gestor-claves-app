@@ -534,7 +534,13 @@ fun PantallaCrearMaster(onConfirmado: (String) -> Unit) {
                     modifier = Modifier.fillMaxWidth(), colors = campoColores())
                 // Indicador de fortaleza
                 if (password.isNotEmpty()) {
-                    val f = calcularFortaleza(password)
+                    val f = calcularFortaleza(
+                        password,
+                        stringResource(R.string.master_strength_weak),
+                        stringResource(R.string.master_strength_fair),
+                        stringResource(R.string.master_strength_good),
+                        stringResource(R.string.master_strength_strong)
+                    )
                     Row(modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         repeat(4) { i ->
@@ -719,18 +725,22 @@ fun PantallaIngresarMaster(activityScope: CoroutineScope,
 // ═══════════════════════════════════════════════════════════
 data class Fortaleza(val nivel: Int, val color: Color, val texto: String)
 
-@Composable
-fun calcularFortaleza(password: String): Fortaleza {
+// CORRECCIÓN: función normal (no @Composable) — recibe strings como parámetros
+// Los strings se resuelven en el contexto @Composable del llamador (PantallaCrearMaster)
+fun calcularFortaleza(
+    password: String,
+    strWeak: String, strFair: String, strGood: String, strStrong: String
+): Fortaleza {
     var p = 0
     if (password.length >= 8) p++
     if (password.length >= 12) p++
     if (password.any { it.isDigit() } && password.any { it.isLetter() }) p++
     if (password.any { !it.isLetterOrDigit() }) p++
     return when (p) {
-        0, 1 -> Fortaleza(1, Color(0xFFFF4444), stringResource(R.string.master_strength_weak))
-        2    -> Fortaleza(2, Color(0xFFCC7700), stringResource(R.string.master_strength_fair))
-        3    -> Fortaleza(3, Color(0xFF4DA6FF), stringResource(R.string.master_strength_good))
-        else -> Fortaleza(4, Color(0xFF00AA66), stringResource(R.string.master_strength_strong))
+        0, 1 -> Fortaleza(1, Color(0xFFFF4444), strWeak)
+        2    -> Fortaleza(2, Color(0xFFCC7700), strFair)
+        3    -> Fortaleza(3, Color(0xFF4DA6FF), strGood)
+        else -> Fortaleza(4, Color(0xFF00AA66), strStrong)
     }
 }
 
