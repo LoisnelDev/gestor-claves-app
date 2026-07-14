@@ -60,8 +60,7 @@ import javax.crypto.spec.SecretKeySpec
 // MODELO DE DATOS
 // ═══════════════════════════════════════════════════════════
 // INGRESAR_MASTER: recuperación (backup existe, prefs vacías)
-// INGRESAR_SESSION: reinicio de sesión (prefs tienen datos, master no está en memoria)
-enum class Pantalla { LOGIN, CREAR_MASTER, INGRESAR_MASTER, INGRESAR_SESSION, MENU, EDITOR }
+enum class Pantalla { LOGIN, CREAR_MASTER, INGRESAR_MASTER, MENU, EDITOR }
 
 data class Clave(
     val sitio: String,
@@ -84,6 +83,10 @@ private const val AES_ALGORITHM      = "AES/GCM/NoPadding"
 // Solo indica si el master fue configurado en ESTE dispositivo.
 // No viaja en el backup (EncryptedSharedPreferences está excluida del backup).
 private const val MASTER_FLAG_KEY    = "master_configured"
+// Clave donde se guarda la master password cifrada por el Android Keystore
+// Vive en EncryptedSharedPreferences — protegida por hardware del dispositivo
+// Solo se usa en el dispositivo actual — NO viaja en backups
+private const val MASTER_PWD_KEY     = "master_password_enc"
 
 // ═══════════════════════════════════════════════════════════
 // ACTIVIDAD PRINCIPAL
@@ -196,7 +199,6 @@ private fun getPrefs(context: Context): android.content.SharedPreferences {
 // FLUJO CORRECTO:
 // ┌─ ¿Prefs tienen datos de usuario? (excluyendo FLAG)
 // │   SÍ → ¿passwordMaster en memoria está vacío?
-// │   │     SÍ → INGRESAR_SESSION (reinicio de app, pedir master una vez)
 // │   │     NO → MENU (sesión activa)
 // │   NO → ¿Existe backup.dat?
 // │         SÍ → INGRESAR_MASTER (recuperación cross-device)
@@ -211,13 +213,29 @@ data class EstadoApp(
 fun detectarEstado(context: Context): EstadoApp {
     return try {
         val prefs = getPrefs(context)
-        val tieneDatos = prefs.all.any { it.key != MASTER_FLAG_KEY }
+        val tieneDatos = prefs.all.any { it.key != MASTER_FLAG_KEY && it.key != MASTER_PWD_KEY }
         val masterFlag = prefs.getBoolean(MASTER_FLAG_KEY, false)
         val tieneBackup = java.io.File(context.filesDir, "backup_local_invisible.dat").exists()
         EstadoApp(tieneDatos, tieneBackup, masterFlag)
     } catch (e: Exception) {
         EstadoApp(false, false, false)
     }
+}
+
+// Recuperar master password guardada en EncryptedSharedPreferences
+// Retorna null si no existe (primer uso o dispositivo nuevo)
+fun recuperarMasterGuardada(context: Context): String? {
+    return try {
+        getPrefs(context).getString(MASTER_PWD_KEY, null)
+    } catch (e: Exception) { null }
+}
+
+// Guardar master password en EncryptedSharedPreferences
+// Protegida por Android Keystore — solo accesible en este dispositivo
+fun guardarMasterEnPrefs(context: Context, passwordMaster: String) {
+    try {
+        getPrefs(context).edit().putString(MASTER_PWD_KEY, passwordMaster).commit()
+    } catch (e: Exception) { }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -257,7 +275,7 @@ private fun actualizarRespaldoLocal(context: Context,
     prefs: android.content.SharedPreferences, passwordMaster: String) {
     try {
         val json = JSONObject()
-        prefs.all.forEach { (k, v) -> if (k != MASTER_FLAG_KEY) json.put(k, v.toString()) }
+        prefs.all.forEach { (k, v) -> if (k != MASTER_FLAG_KEY && k != MASTER_PWD_KEY) json.put(k, v.toString()) }
         java.io.File(context.filesDir, "backup_local_invisible.dat")
             .writeBytes(cifrarRespaldo(json.toString(), passwordMaster))
     } catch (e: Exception) { }
@@ -284,7 +302,7 @@ fun guardarClaveAsync(scope: CoroutineScope, context: Context, clave: Clave,
 suspend fun cargarClavesAsync(context: Context): List<Clave> =
     withContext(Dispatchers.IO) {
         try {
-            getPrefs(context).all.filter { it.key != MASTER_FLAG_KEY }
+            getPrefs(context).all.filter { it.key != MASTER_FLAG_KEY && it.key != MASTER_PWD_KEY }
                 .mapNotNull { (sitio, valor) ->
                     try { val j = JSONObject(valor.toString())
                         Clave(sitio, j.optString("usuario"), j.optString("password"), j.optString("extras"))
@@ -340,7 +358,6 @@ suspend fun restaurarDesdeBackup(context: Context, passwordMaster: String): Bool
         } catch (e: Exception) { false }
     }
 
-// Verificar contraseña maestra sin restaurar (para INGRESAR_SESSION)
 fun verificarPasswordMaster(context: Context, passwordMaster: String): Boolean {
     return try {
         val archivo = java.io.File(context.filesDir, "backup_local_invisible.dat")
@@ -376,22 +393,32 @@ fun GestorApp(activityScope: CoroutineScope, activity: MainActivity, onSalir: ()
         Pantalla.LOGIN -> PantallaLogin(
             activity = activity,
             onAutenticado = {
-                // LÓGICA CORREGIDA: tres fuentes de verdad
+                // LÓGICA CORRECTA: master password transparente para el usuario
                 val estado = detectarEstado(context)
-                pantalla = when {
-                    // Caso 1: hay datos locales y master en memoria → sesión activa
-                    estado.tieneDatosLocales && passwordMaster.isNotEmpty() ->
-                        Pantalla.MENU
-                    // Caso 2: hay datos locales pero master no está en memoria
-                    // → app se reinició, pedir master una vez por sesión
-                    estado.tieneDatosLocales && passwordMaster.isEmpty() ->
-                        Pantalla.INGRESAR_SESSION
-                    // Caso 3: no hay datos locales pero hay backup
-                    // → recuperación (desinstalación o dispositivo nuevo)
+
+                when {
+                    // Caso 1: hay datos + master guardada en prefs → uso normal transparente
+                    // La biometría ya autenticó — recuperamos master automáticamente
+                    estado.tieneDatosLocales -> {
+                        val masterGuardada = recuperarMasterGuardada(context)
+                        if (masterGuardada != null) {
+                            // Master encontrada — sesión transparente sin pedir nada
+                            passwordMaster = masterGuardada
+                            pantalla = Pantalla.MENU
+                        } else {
+                            // Edge case: hay datos pero no hay master guardada
+                            // (migración desde versión anterior sin master)
+                            // Tratar como primer uso para establecer master
+                            pantalla = Pantalla.CREAR_MASTER
+                        }
+                    }
+                    // Caso 2: no hay datos locales pero hay backup cifrado
+                    // → recuperación en dispositivo nuevo o tras reinstalación
                     !estado.tieneDatosLocales && estado.tieneBackupDat ->
-                        Pantalla.INGRESAR_MASTER
-                    // Caso 4: primer uso absoluto
-                    else -> Pantalla.CREAR_MASTER
+                        pantalla = Pantalla.INGRESAR_MASTER
+
+                    // Caso 3: primer uso absoluto — sin datos ni backup
+                    else -> pantalla = Pantalla.CREAR_MASTER
                 }
             }
         )
@@ -399,6 +426,9 @@ fun GestorApp(activityScope: CoroutineScope, activity: MainActivity, onSalir: ()
         Pantalla.CREAR_MASTER -> PantallaCrearMaster(
             onConfirmado = { master ->
                 passwordMaster = master
+                // Guardar master en EncryptedSharedPreferences (protegida por Keystore)
+                // para que usos futuros sean transparentes tras biometría
+                guardarMasterEnPrefs(context, master)
                 configurarMasterAsync(activityScope, context, master) {
                     pantalla = Pantalla.MENU
                 }
@@ -410,18 +440,13 @@ fun GestorApp(activityScope: CoroutineScope, activity: MainActivity, onSalir: ()
             esRecuperacion = true,
             onConfirmado = { master ->
                 passwordMaster = master
+                // Guardar master tras recuperación exitosa
+                // para que futuros usos sean transparentes
+                guardarMasterEnPrefs(context, master)
                 pantalla = Pantalla.MENU
             }
         )
 
-        Pantalla.INGRESAR_SESSION -> PantallaIngresarMaster(
-            activityScope = activityScope,
-            esRecuperacion = false,
-            onConfirmado = { master ->
-                passwordMaster = master
-                pantalla = Pantalla.MENU
-            }
-        )
 
         Pantalla.MENU -> PantallaMenu(
             claves = listaClaves, cargando = cargando,
