@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.billing.BillingTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-16T12:58:45.573Z" hostname="aries" time="0.191">
+  <properties/>
+  <testcase name="ut042_billing_constants_has_required_product_ids" classname="com.loisnel.gestorclaves.billing.BillingTest" time="0.061"/>
+  <testcase name="ut041_expired_access_preserved_is_different_from_free" classname="com.loisnel.gestorclaves.billing.BillingTest" time="0.001"/>
+  <testcase name="ut039_billing_manager_has_no_dao_fields" classname="com.loisnel.gestorclaves.billing.BillingTest" time="0.1"/>
+  <testcase name="ut040_pro_status_has_all_required_states" classname="com.loisnel.gestorclaves.billing.BillingTest" time="0.02"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

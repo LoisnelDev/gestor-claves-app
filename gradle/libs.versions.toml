@@ -2,11 +2,11 @@
 agp                = "8.5.2"
 kotlin             = "2.0.21"
 ksp                = "2.0.21-1.0.28"
-coreKtx            = "1.16.0"
+coreKtx            = "1.13.0"
 junit              = "4.13.2"
 junitVersion       = "1.2.1"
 espressoCore       = "3.6.1"
-lifecycleRuntimeKtx = "2.9.0"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose    = "1.10.1"
 composeBom         = "2025.05.01"
 biometric          = "1.1.0"
@@ -15,6 +15,8 @@ fragmentKtx        = "1.8.6"
 room               = "2.6.1"
 coroutines         = "1.8.1"
 coroutinesTest     = "1.8.1"
+zxing              = "3.5.3"
+billing            = "7.0.0"
 
 [libraries]
 # ── AndroidX base ─────────────────────────────────────────
@@ -44,6 +46,9 @@ kotlinx-coroutines-test         = { group = "org.jetbrains.kotlinx",   name = "k
 junit                           = { group = "junit",                   name = "junit",                     version.ref = "junit" }
 androidx-junit                  = { group = "androidx.test.ext",       name = "junit",                     version.ref = "junitVersion" }
 androidx-espresso-core          = { group = "androidx.test.espresso",  name = "espresso-core",             version.ref = "espressoCore" }
+
+billing-ktx                     = { group = "com.android.billingclient",  name = "billing-ktx",               version.ref = "billing" }
+zxing-core                      = { group = "com.google.zxing",         name = "core",                    version.ref = "zxing" }
 
 [plugins]
 android-application = { id = "com.android.application",               version.ref = "agp" }

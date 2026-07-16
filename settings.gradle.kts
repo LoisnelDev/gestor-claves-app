@@ -17,3 +17,5 @@ dependencyResolutionManagement {
 rootProject.name = "GestorClaves"
 include(":app")
 include(":core")
+include(":enterprise")
+include(":billing")
