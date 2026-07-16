@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.crypto.TenantContextTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-16T07:19:22.757Z" hostname="aries" time="0.004">
+  <properties/>
+  <testcase name="ut017_context_switch_returns_correct_tenant_key" classname="com.loisnel.gestorclaves.core.crypto.TenantContextTest" time="0.001"/>
+  <testcase name="ut018_context_switch_zeros_previous_tenant_key" classname="com.loisnel.gestorclaves.core.crypto.TenantContextTest" time="0.001"/>
+  <testcase name="ut019_close_session_nullifies_active_key" classname="com.loisnel.gestorclaves.core.crypto.TenantContextTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

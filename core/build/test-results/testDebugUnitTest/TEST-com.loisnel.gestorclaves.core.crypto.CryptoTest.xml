@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.crypto.CryptoTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-07-16T07:19:19.570Z" hostname="aries" time="0.142">
+  <properties/>
+  <testcase name="ut002_hkdf_isolation_different_tenants_different_keys" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.116"/>
+  <testcase name="ut003_hkdf_output_length_is_32_bytes_for_aes256" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.001"/>
+  <testcase name="ut005_aes_gcm_encrypt_decrypt_roundtrip" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.01"/>
+  <testcase name="ut008_aes_gcm_wrong_key_throws_exception" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.001"/>
+  <testcase name="ut007_aes_gcm_unique_nonce_per_encryption" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.001"/>
+  <testcase name="ut004_hkdf_different_salt_different_key" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.001"/>
+  <testcase name="ut001_hkdf_determinism_same_input_same_key" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.002"/>
+  <testcase name="ut006_aes_gcm_tamper_detection_throws_aead_exception" classname="com.loisnel.gestorclaves.core.crypto.CryptoTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
