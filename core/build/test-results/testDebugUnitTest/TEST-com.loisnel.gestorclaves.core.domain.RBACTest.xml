@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.domain.RBACTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-16T11:52:40.039Z" hostname="aries" time="0.016">
+  <properties/>
+  <testcase name="ut021_user_role_has_three_values" classname="com.loisnel.gestorclaves.core.domain.RBACTest" time="0.0"/>
+  <testcase name="ut023_fcp_constants_has_all_fsm_states" classname="com.loisnel.gestorclaves.core.domain.RBACTest" time="0.001"/>
+  <testcase name="ut020_unauthorized_role_exception_has_correct_fields" classname="com.loisnel.gestorclaves.core.domain.RBACTest" time="0.013"/>
+  <testcase name="ut022_rbac_enforcement_function_throws_for_wrong_role" classname="com.loisnel.gestorclaves.core.domain.RBACTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

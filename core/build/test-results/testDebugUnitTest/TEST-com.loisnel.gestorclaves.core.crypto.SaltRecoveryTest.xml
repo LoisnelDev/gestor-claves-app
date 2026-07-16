@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-16T07:19:19.715Z" hostname="aries" time="3.034">
+<testsuite name="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-16T11:52:36.168Z" hostname="aries" time="3.841">
   <properties/>
-  <testcase name="ut010_salt_backup_wrong_password_throws_aead_exception" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.99"/>
-  <testcase name="ut011_salt_backup_two_exports_are_different" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.691"/>
-  <testcase name="ut009_salt_backup_export_import_roundtrip" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.685"/>
-  <testcase name="ut012_salt_backup_corrupted_throws_exception" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.668"/>
+  <testcase name="ut010_salt_backup_wrong_password_throws_aead_exception" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="1.407"/>
+  <testcase name="ut011_salt_backup_two_exports_are_different" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.743"/>
+  <testcase name="ut009_salt_backup_export_import_roundtrip" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.727"/>
+  <testcase name="ut012_salt_backup_corrupted_throws_exception" classname="com.loisnel.gestorclaves.core.crypto.SaltRecoveryTest" time="0.964"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

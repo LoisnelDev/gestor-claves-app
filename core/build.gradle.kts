@@ -54,3 +54,8 @@ dependencies {
     // javax.crypto, java.security, Android Keystore:
     // incluidos en el Android SDK — sin dependencia adicional
 }
+
+// Room schema export — requerido cuando exportSchema = true
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
