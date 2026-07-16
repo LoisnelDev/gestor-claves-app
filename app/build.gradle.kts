@@ -11,14 +11,21 @@ android {
         applicationId  = "com.loisnel.gestorclaves"
         minSdk         = 28
         targetSdk      = 36
-        versionCode    = 1
-        versionName    = "1.0"
+        versionCode    = 2
+        versionName    = "1.1.0-fcp"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
-        release {
+        debug {
             isMinifyEnabled = false
+            applicationIdSuffix = ".debug"
+            versionNameSuffix   = "-debug"
+        }
+        release {
+            // TAD-B v2.1.1 — Fase Delta: Hardening final
+            isMinifyEnabled   = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -32,13 +39,16 @@ android {
     }
 
     buildFeatures {
-        compose = true
+        compose     = true
+        buildConfig = true  // Necesario para BuildConfig.DEBUG
     }
 }
 
 dependencies {
-    // Módulo :core (criptografía, Room, dominio)
+    // Módulos FCP
     implementation(project(":core"))
+    implementation(project(":enterprise"))
+    implementation(project(":billing"))
 
     // Compose
     implementation(platform(libs.androidx.compose.bom))
