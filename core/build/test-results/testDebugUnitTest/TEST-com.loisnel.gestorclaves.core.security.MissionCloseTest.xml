@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.security.MissionCloseTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-16T13:53:17.893Z" hostname="aries" time="0.016">
+  <properties/>
+  <testcase name="ut047_close_canonical_is_deterministic" classname="com.loisnel.gestorclaves.core.security.MissionCloseTest" time="0.009"/>
+  <testcase name="ut046_close_result_constants_defined" classname="com.loisnel.gestorclaves.core.security.MissionCloseTest" time="0.001"/>
+  <testcase name="ut048_close_signature_verifiable" classname="com.loisnel.gestorclaves.core.security.MissionCloseTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

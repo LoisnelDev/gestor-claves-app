@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.security.AuditTrailTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-07-16T13:53:17.883Z" hostname="aries" time="0.007">
+  <properties/>
+  <testcase name="ut043_kpis_calculated_correctly" classname="com.loisnel.gestorclaves.core.security.AuditTrailTest" time="0.003"/>
+  <testcase name="ut044_interrupted_missions_in_incident_report" classname="com.loisnel.gestorclaves.core.security.AuditTrailTest" time="0.003"/>
+  <testcase name="ut045_compliance_rate_calculated_correctly" classname="com.loisnel.gestorclaves.core.security.AuditTrailTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

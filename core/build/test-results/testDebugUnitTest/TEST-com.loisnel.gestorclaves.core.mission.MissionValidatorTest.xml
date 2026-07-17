@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-07-16T13:53:17.832Z" hostname="aries" time="0.048">
+  <properties/>
+  <testcase name="ut035_duplicate_mission_id_rejected_check6" classname="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" time="0.009"/>
+  <testcase name="ut032_expired_ttl_rejected_check3" classname="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" time="0.01"/>
+  <testcase name="ut034_wrong_device_binding_rejected_check4" classname="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" time="0.012"/>
+  <testcase name="ut033_ttl_within_tolerance_accepted" classname="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" time="0.006"/>
+  <testcase name="ut036_valid_packet_passes_all_6_checks" classname="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" time="0.005"/>
+  <testcase name="ut031_invalid_signature_rejected_check2" classname="com.loisnel.gestorclaves.core.mission.MissionValidatorTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

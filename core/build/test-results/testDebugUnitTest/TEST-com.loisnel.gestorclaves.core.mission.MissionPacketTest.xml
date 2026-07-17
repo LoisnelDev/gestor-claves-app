@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.core.mission.MissionPacketTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-16T13:53:17.602Z" hostname="aries" time="0.227">
+  <properties/>
+  <testcase name="ut027_packet_serializes_to_json_with_all_fields" classname="com.loisnel.gestorclaves.core.mission.MissionPacketTest" time="0.199"/>
+  <testcase name="ut029_canonical_string_is_deterministic" classname="com.loisnel.gestorclaves.core.mission.MissionPacketTest" time="0.003"/>
+  <testcase name="ut030_wrong_version_rejected_in_check1" classname="com.loisnel.gestorclaves.core.mission.MissionPacketTest" time="0.007"/>
+  <testcase name="ut028_packet_deserializes_roundtrip" classname="com.loisnel.gestorclaves.core.mission.MissionPacketTest" time="0.017"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
