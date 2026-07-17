@@ -1,0 +1,251 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.loisnel.orion.debug"
+4    android:versionCode="1"
+5    android:versionName="1.0.0-debug" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="28"
+9        android:targetSdkVersion="36" />
+10
+11    <uses-permission android:name="android.permission.USE_BIOMETRIC" /> <!-- suppress DeprecatedClassUsageInspection -->
+11-->[androidx.biometric:biometric:1.1.0] /home/loisnel/.gradle/caches/9.4.1/transforms/18f94e3b16ac3d5d5312434c13f05e5d/transformed/biometric-1.1.0/AndroidManifest.xml:24:5-72
+11-->[androidx.biometric:biometric:1.1.0] /home/loisnel/.gradle/caches/9.4.1/transforms/18f94e3b16ac3d5d5312434c13f05e5d/transformed/biometric-1.1.0/AndroidManifest.xml:24:22-69
+12    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+12-->[androidx.biometric:biometric:1.1.0] /home/loisnel/.gradle/caches/9.4.1/transforms/18f94e3b16ac3d5d5312434c13f05e5d/transformed/biometric-1.1.0/AndroidManifest.xml:27:5-74
+12-->[androidx.biometric:biometric:1.1.0] /home/loisnel/.gradle/caches/9.4.1/transforms/18f94e3b16ac3d5d5312434c13f05e5d/transformed/biometric-1.1.0/AndroidManifest.xml:27:22-71
+13    <uses-permission android:name="com.android.vending.BILLING" />
+13-->[com.android.billingclient:billing-ktx:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/df778ada779913e4c10fe98b76c3606d/transformed/jetified-billing-ktx-7.0.0/AndroidManifest.xml:9:5-67
+13-->[com.android.billingclient:billing-ktx:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/df778ada779913e4c10fe98b76c3606d/transformed/jetified-billing-ktx-7.0.0/AndroidManifest.xml:9:22-64
+14
+15    <queries>
+15-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:12:5-16:15
+16        <intent>
+16-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:13:9-15:18
+17            <action android:name="com.android.vending.billing.InAppBillingService.BIND" />
+17-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:14:13-91
+17-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:14:21-88
+18        </intent>
+19    </queries>
+20
+21    <permission
+21-->[androidx.core:core:1.13.1] /home/loisnel/.gradle/caches/9.4.1/transforms/8f5518684a0434a14003cafbf193787e/transformed/core-1.13.1/AndroidManifest.xml:22:5-24:47
+22        android:name="com.loisnel.orion.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+22-->[androidx.core:core:1.13.1] /home/loisnel/.gradle/caches/9.4.1/transforms/8f5518684a0434a14003cafbf193787e/transformed/core-1.13.1/AndroidManifest.xml:23:9-81
+23        android:protectionLevel="signature" />
+23-->[androidx.core:core:1.13.1] /home/loisnel/.gradle/caches/9.4.1/transforms/8f5518684a0434a14003cafbf193787e/transformed/core-1.13.1/AndroidManifest.xml:24:9-44
+24
+25    <uses-permission android:name="com.loisnel.orion.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" /> <!-- Although the *SdkVersion is captured in gradle build files, this is required for non gradle builds -->
+25-->[androidx.core:core:1.13.1] /home/loisnel/.gradle/caches/9.4.1/transforms/8f5518684a0434a14003cafbf193787e/transformed/core-1.13.1/AndroidManifest.xml:26:5-97
+25-->[androidx.core:core:1.13.1] /home/loisnel/.gradle/caches/9.4.1/transforms/8f5518684a0434a14003cafbf193787e/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
+26    <!-- <uses-sdk android:minSdkVersion="14"/> -->
+27    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+27-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:24:5-79
+27-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:24:22-76
+28    <uses-permission android:name="android.permission.INTERNET" />
+28-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:25:5-67
+28-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:25:22-64
+29
+30    <application
+30-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:4:5-22:19
+31        android:allowBackup="false"
+31-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:5:9-36
+32        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+32-->[androidx.core:core:1.13.1] /home/loisnel/.gradle/caches/9.4.1/transforms/8f5518684a0434a14003cafbf193787e/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
+33        android:debuggable="true"
+34        android:extractNativeLibs="false"
+35        android:icon="@mipmap/ic_launcher"
+35-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:6:9-43
+36        android:label="@string/app_name"
+36-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:7:9-41
+37        android:roundIcon="@mipmap/ic_launcher_round"
+37-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:8:9-54
+38        android:supportsRtl="true"
+38-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:9:9-35
+39        android:theme="@style/Theme.GestorClaves" >
+39-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:10:9-50
+40        <activity
+40-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:12:9-20:20
+41            android:name="com.loisnel.orion.OrionMainActivity"
+41-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:13:13-46
+42            android:exported="true"
+42-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:14:13-36
+43            android:windowSoftInputMode="adjustResize" >
+43-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:15:13-55
+44            <intent-filter>
+44-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:16:13-19:29
+45                <action android:name="android.intent.action.MAIN" />
+45-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:17:17-68
+45-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:17:25-66
+46
+47                <category android:name="android.intent.category.LAUNCHER" />
+47-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:18:17-76
+47-->/home/loisnel/AndroidStudioProjects/GestorClaves/app-orion/src/main/AndroidManifest.xml:18:27-74
+48            </intent-filter>
+49        </activity>
+50
+51        <meta-data
+51-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:19:9-21:37
+52            android:name="com.google.android.play.billingclient.version"
+52-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:20:13-73
+53            android:value="7.0.0" />
+53-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:21:13-34
+54
+55        <activity
+55-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:23:9-27:75
+56            android:name="com.android.billingclient.api.ProxyBillingActivity"
+56-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:24:13-78
+57            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+57-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:25:13-96
+58            android:exported="false"
+58-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:26:13-37
+59            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+59-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:27:13-72
+60        <activity
+60-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:28:9-32:75
+61            android:name="com.android.billingclient.api.ProxyBillingActivityV2"
+61-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:29:13-80
+62            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+62-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:30:13-96
+63            android:exported="false"
+63-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:31:13-37
+64            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+64-->[com.android.billingclient:billing:7.0.0] /home/loisnel/.gradle/caches/9.4.1/transforms/e7d0c278e90887f96fe831ab93607f03/transformed/jetified-billing-7.0.0/AndroidManifest.xml:32:13-72
+65        <activity
+65-->[com.google.android.gms:play-services-base:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/3008c4a1ee1e1e4ffb12548541d6b043/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:20:9-22:45
+66            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+66-->[com.google.android.gms:play-services-base:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/3008c4a1ee1e1e4ffb12548541d6b043/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:20:19-85
+67            android:exported="false"
+67-->[com.google.android.gms:play-services-base:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/3008c4a1ee1e1e4ffb12548541d6b043/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:22:19-43
+68            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+68-->[com.google.android.gms:play-services-base:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/3008c4a1ee1e1e4ffb12548541d6b043/transformed/jetified-play-services-base-18.3.0/AndroidManifest.xml:21:19-78
+69
+70        <meta-data
+70-->[com.google.android.gms:play-services-basement:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/552ae690892c3d0231efbfb1059f3f05/transformed/jetified-play-services-basement-18.3.0/AndroidManifest.xml:21:9-23:69
+71            android:name="com.google.android.gms.version"
+71-->[com.google.android.gms:play-services-basement:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/552ae690892c3d0231efbfb1059f3f05/transformed/jetified-play-services-basement-18.3.0/AndroidManifest.xml:22:13-58
+72            android:value="@integer/google_play_services_version" />
+72-->[com.google.android.gms:play-services-basement:18.3.0] /home/loisnel/.gradle/caches/9.4.1/transforms/552ae690892c3d0231efbfb1059f3f05/transformed/jetified-play-services-basement-18.3.0/AndroidManifest.xml:23:13-66
+73
+74        <activity
+74-->[androidx.compose.ui:ui-tooling-android:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/93ae0aa1a3200c1d5472b465c2019ee8/transformed/jetified-ui-tooling-release/AndroidManifest.xml:23:9-25:39
+75            android:name="androidx.compose.ui.tooling.PreviewActivity"
+75-->[androidx.compose.ui:ui-tooling-android:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/93ae0aa1a3200c1d5472b465c2019ee8/transformed/jetified-ui-tooling-release/AndroidManifest.xml:24:13-71
+76            android:exported="true" />
+76-->[androidx.compose.ui:ui-tooling-android:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/93ae0aa1a3200c1d5472b465c2019ee8/transformed/jetified-ui-tooling-release/AndroidManifest.xml:25:13-36
+77        <activity
+77-->[androidx.compose.ui:ui-test-manifest:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/8faef8407b338a4c35a7716cd1a537f5/transformed/jetified-ui-test-manifest-1.8.2/AndroidManifest.xml:23:9-26:79
+78            android:name="androidx.activity.ComponentActivity"
+78-->[androidx.compose.ui:ui-test-manifest:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/8faef8407b338a4c35a7716cd1a537f5/transformed/jetified-ui-test-manifest-1.8.2/AndroidManifest.xml:24:13-63
+79            android:exported="true"
+79-->[androidx.compose.ui:ui-test-manifest:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/8faef8407b338a4c35a7716cd1a537f5/transformed/jetified-ui-test-manifest-1.8.2/AndroidManifest.xml:25:13-36
+80            android:theme="@android:style/Theme.Material.Light.NoActionBar" />
+80-->[androidx.compose.ui:ui-test-manifest:1.8.2] /home/loisnel/.gradle/caches/9.4.1/transforms/8faef8407b338a4c35a7716cd1a537f5/transformed/jetified-ui-test-manifest-1.8.2/AndroidManifest.xml:26:13-76
+81
+82        <provider
+82-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:24:9-32:20
+83            android:name="androidx.startup.InitializationProvider"
+83-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:25:13-67
+84            android:authorities="com.loisnel.orion.debug.androidx-startup"
+84-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:26:13-68
+85            android:exported="false" >
+85-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:27:13-37
+86            <meta-data
+86-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+87                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+87-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:30:17-75
+88                android:value="androidx.startup" />
+88-->[androidx.emoji2:emoji2:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/f61b0adb2dcd5375161e048761c01bb3/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:31:17-49
+89            <meta-data
+89-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/loisnel/.gradle/caches/9.4.1/transforms/94b51f28dbbe5aaa1c035ced1915a7b5/transformed/jetified-lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
+90                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+90-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/loisnel/.gradle/caches/9.4.1/transforms/94b51f28dbbe5aaa1c035ced1915a7b5/transformed/jetified-lifecycle-process-2.8.7/AndroidManifest.xml:30:17-78
+91                android:value="androidx.startup" />
+91-->[androidx.lifecycle:lifecycle-process:2.8.7] /home/loisnel/.gradle/caches/9.4.1/transforms/94b51f28dbbe5aaa1c035ced1915a7b5/transformed/jetified-lifecycle-process-2.8.7/AndroidManifest.xml:31:17-49
+92            <meta-data
+92-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:29:13-31:52
+93                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+93-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:30:17-85
+94                android:value="androidx.startup" />
+94-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:31:17-49
+95        </provider>
+96
+97        <service
+97-->[androidx.room:room-runtime:2.6.1] /home/loisnel/.gradle/caches/9.4.1/transforms/c4c54df8e3fca65c6db980bc67876f09/transformed/room-runtime-2.6.1/AndroidManifest.xml:24:9-28:63
+98            android:name="androidx.room.MultiInstanceInvalidationService"
+98-->[androidx.room:room-runtime:2.6.1] /home/loisnel/.gradle/caches/9.4.1/transforms/c4c54df8e3fca65c6db980bc67876f09/transformed/room-runtime-2.6.1/AndroidManifest.xml:25:13-74
+99            android:directBootAware="true"
+99-->[androidx.room:room-runtime:2.6.1] /home/loisnel/.gradle/caches/9.4.1/transforms/c4c54df8e3fca65c6db980bc67876f09/transformed/room-runtime-2.6.1/AndroidManifest.xml:26:13-43
+100            android:exported="false" />
+100-->[androidx.room:room-runtime:2.6.1] /home/loisnel/.gradle/caches/9.4.1/transforms/c4c54df8e3fca65c6db980bc67876f09/transformed/room-runtime-2.6.1/AndroidManifest.xml:27:13-37
+101
+102        <receiver
+102-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:34:9-52:20
+103            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+103-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:35:13-76
+104            android:directBootAware="false"
+104-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:36:13-44
+105            android:enabled="true"
+105-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:37:13-35
+106            android:exported="true"
+106-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:38:13-36
+107            android:permission="android.permission.DUMP" >
+107-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:39:13-57
+108            <intent-filter>
+108-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:40:13-42:29
+109                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+109-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:41:17-91
+109-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:41:25-88
+110            </intent-filter>
+111            <intent-filter>
+111-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:43:13-45:29
+112                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+112-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:44:17-85
+112-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:44:25-82
+113            </intent-filter>
+114            <intent-filter>
+114-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:46:13-48:29
+115                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+115-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:47:17-88
+115-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:47:25-85
+116            </intent-filter>
+117            <intent-filter>
+117-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:49:13-51:29
+118                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+118-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:50:17-95
+118-->[androidx.profileinstaller:profileinstaller:1.4.0] /home/loisnel/.gradle/caches/9.4.1/transforms/21a0af16b9e85bf2aad9bd39b94693e0/transformed/jetified-profileinstaller-1.4.0/AndroidManifest.xml:50:25-92
+119            </intent-filter>
+120        </receiver>
+121
+122        <service
+122-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:28:9-34:19
+123            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+123-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:29:13-103
+124            android:exported="false" >
+124-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:30:13-37
+125            <meta-data
+125-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:31:13-33:39
+126                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+126-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:32:17-94
+127                android:value="cct" />
+127-->[com.google.android.datatransport:transport-backend-cct:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/b4a2516dffae687c6bdf3ad51035911e/transformed/jetified-transport-backend-cct-3.1.8/AndroidManifest.xml:33:17-36
+128        </service>
+129        <service
+129-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:26:9-30:19
+130            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+130-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:27:13-117
+131            android:exported="false"
+131-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:28:13-37
+132            android:permission="android.permission.BIND_JOB_SERVICE" >
+132-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:29:13-69
+133        </service>
+134
+135        <receiver
+135-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:32:9-34:40
+136            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+136-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:33:13-132
+137            android:exported="false" />
+137-->[com.google.android.datatransport:transport-runtime:3.1.8] /home/loisnel/.gradle/caches/9.4.1/transforms/a6a51752a2a38ab8fa051592b2c44d04/transformed/jetified-transport-runtime-3.1.8/AndroidManifest.xml:34:13-37
+138    </application>
+139
+140</manifest>

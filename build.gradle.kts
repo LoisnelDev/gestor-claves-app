@@ -1,5 +1,5 @@
-// build.gradle.kts — Proyecto raíz
-// Declara plugins disponibles para todos los submodulos
+// build.gradle.kts — Proyecto raíz ORION Monorepo
+// Declara plugins disponibles para todos los módulos (apply false)
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library)     apply false

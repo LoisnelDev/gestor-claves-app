@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-xhdpi_ic_launcher_round.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-xhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-hdpi_ic_launcher.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-hdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-xxxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-xxxhdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-xhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-mdpi_ic_launcher.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-mdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-mdpi_ic_launcher_round.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-mdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-xxhdpi_ic_launcher.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-xxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-hdpi_ic_launcher_round.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-hdpi/ic_launcher_round.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-xxxhdpi_ic_launcher.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-xxxhdpi/ic_launcher.webp"
+    },
+    {
+        "merged": "com.loisnel.orion.app-orion-debug-60:/mipmap-xxhdpi_ic_launcher_round.webp.flat",
+        "source": "com.loisnel.orion.app-orion-main-62:/mipmap-xxhdpi/ic_launcher_round.webp"
+    }
+]
