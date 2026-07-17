@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.loisnel.gestorclaves.sync.SyncProtocolTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-17T16:38:08.060Z" hostname="aries" time="0.065">
+  <properties/>
+  <testcase name="ut058_sync_packet_json_roundtrip" classname="com.loisnel.gestorclaves.sync.SyncProtocolTest" time="0.035"/>
+  <testcase name="ut061_node_registry_stores_and_retrieves_nodes" classname="com.loisnel.gestorclaves.sync.SyncProtocolTest" time="0.001"/>
+  <testcase name="ut060_conflict_resolver_protects_completed_state" classname="com.loisnel.gestorclaves.sync.SyncProtocolTest" time="0.019"/>
+  <testcase name="ut059_sync_manager_deduplicates_mission_ids" classname="com.loisnel.gestorclaves.sync.SyncProtocolTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
