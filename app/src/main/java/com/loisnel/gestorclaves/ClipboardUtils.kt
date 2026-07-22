@@ -3,55 +3,70 @@ package com.loisnel.gestorclaves
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 /**
- * ClipboardUtils — Gestión segura del portapapeles
+ * ClipboardUtils — Borrado automático del portapapeles via WorkManager.
  *
- * Copia datos al portapapeles y los borra automáticamente después de 30 segundos.
- * Mitiga la exposición de credenciales a apps de terceros que leen el portapapeles.
+ * Por qué WorkManager y no Handler.postDelayed():
+ *   Handler vive en el MainLooper → Doze Mode lo pausa indefinidamente.
  *
- * Cumplimiento: CWE-312 (Cleartext Storage of Sensitive Information)
- * Estándar: OWASP MSTG-STORAGE-10
+ * Por qué WorkManager y no AlarmManager.setExactAndAllowWhileIdle():
+ *   Requiere SCHEDULE_EXACT_ALARM (API 31+) — solo concedido a apps de
+ *   alarma/calendario. Un gestor de contraseñas no califica → Play Store
+ *   puede rechazar o pedir justificación. Además, lanza SecurityException
+ *   si el usuario no activa el permiso en Ajustes → crash en campo.
+ *
+ * WorkManager usa JobScheduler internamente → exento de Doze Mode
+ * para trabajos con delay corto. Sin permisos especiales. Play Store safe.
+ *
+ * Precisión: ~30s ± 15s en condiciones normales. Suficiente para
+ * borrado de portapapeles — el objetivo es garantizar que ocurra,
+ * no precisión de milisegundos.
+ *
+ * Cumplimiento: CWE-312 · OWASP MSTG-STORAGE-10
  */
 object ClipboardUtils {
 
-    private const val CLEAR_DELAY_MS = 30_000L // 30 segundos
-    private val handler = Handler(Looper.getMainLooper())
+    private const val WORK_TAG        = "clipboard_clear"
+    private const val CLEAR_DELAY_SEC = 30L
 
     /**
-     * Copia texto al portapapeles y programa su borrado en 30 segundos.
+     * Programa el borrado del portapapeles en ~30 segundos.
      *
-     * @param context ApplicationContext
-     * @param label   Etiqueta legible del contenido (ej. "Contraseña")
-     * @param text    Texto a copiar — se borrará automáticamente
+     * Llamar en el contexto de la Activity (no Composable) después de
+     * cada clipboard.setText(). ExistingWorkPolicy.REPLACE garantiza
+     * que cada copia reinicia el temporizador de 30s.
+     *
+     * @param context Activity context (para WorkManager.getInstance)
      */
-    fun copyWithAutoClear(context: Context, label: String, text: String) {
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
-                as ClipboardManager
+    fun scheduleClear(context: Context) {
+        val request = OneTimeWorkRequestBuilder<ClipboardClearWorker>()
+            .setInitialDelay(CLEAR_DELAY_SEC, TimeUnit.SECONDS)
+            .addTag(WORK_TAG)
+            .build()
 
-        // Copiar al portapapeles
-        clipboard.setPrimaryClip(ClipData.newPlainText(label, text))
-
-        // Cancelar cualquier borrado pendiente anterior
-        handler.removeCallbacksAndMessages(null)
-
-        // Programar borrado automático en 30 segundos
-        handler.postDelayed({
-            clearClipboard(context)
-        }, CLEAR_DELAY_MS)
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            WORK_TAG,
+            ExistingWorkPolicy.REPLACE, // Reinicia el timer en cada copia
+            request
+        )
     }
 
     /**
-     * Borra el portapapeles inmediatamente.
-     * Llamar en onPause() o cuando el usuario sale de la app.
+     * Limpia el portapapeles INMEDIATAMENTE y cancela el trabajo pendiente.
+     * Llamar en onStop() — borrado instantáneo al salir de la app.
+     *
+     * @param context Activity context
      */
-    fun clearClipboard(context: Context) {
+    fun clearNow(context: Context) {
+        WorkManager.getInstance(context).cancelAllWorkByTag(WORK_TAG)
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE)
-                as ClipboardManager
-        // Sobreescribir con string vacío — el contenido sensible ya no es recuperable
+            as? ClipboardManager ?: return
+        clipboard.clearPrimaryClip()
         clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
-        handler.removeCallbacksAndMessages(null)
     }
 }
