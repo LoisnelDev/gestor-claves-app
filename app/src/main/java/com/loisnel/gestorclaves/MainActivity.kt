@@ -95,13 +95,14 @@ private const val MASTER_PWD_KEY     = "master_password_enc"
 class MainActivity : FragmentActivity() {
 
     private val inactivityHandler = Handler(Looper.getMainLooper())
-    private val TIMEOUT_MS = 120_000L
+    private val TIMEOUT_MS = 90_000L
     private var esperandoBiometria = false
+    var onInactividadCallback: (() -> Unit)? = null
 
     private val inactivityRunnable = Runnable {
         if (!isFinishing && !isDestroyed) {
             mostrarNotificacionCierre()
-            finishAffinity()
+            onInactividadCallback?.invoke()
         }
     }
 
@@ -163,14 +164,10 @@ class MainActivity : FragmentActivity() {
         return super.dispatchTouchEvent(ev)
     }
     override fun onResume()  { super.onResume();  if (!esperandoBiometria) reiniciarTemporizador() }
-    override fun onPause()   { super.onPause();   if (!esperandoBiometria) pausarTemporizador() }
+    override fun onPause()   { super.onPause() }
+    // onPause ya NO cancela el temporizador de 120s: si la app queda
+    // huerfana en 2do plano, el re-bloqueo debe seguir contando igual.
     override fun onDestroy() { inactivityHandler.removeCallbacks(inactivityRunnable); super.onDestroy() }
-
-    override fun onStop() {
-        super.onStop()
-        // Seguridad: borrar portapapeles inmediatamente al salir de la app
-        ClipboardUtils.clearNow(this)
-    }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -394,6 +391,13 @@ fun GestorApp(activityScope: CoroutineScope, activity: MainActivity, onSalir: ()
             cargando = true
             listaClaves = cargarClavesAsync(context)
             cargando = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        activity.onInactividadCallback = {
+            passwordMaster = ""
+            pantalla = Pantalla.LOGIN
         }
     }
 
