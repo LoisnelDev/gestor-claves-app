@@ -20,3 +20,4 @@ backup_local_invisible.dat
 
 # Google Services
 google-services.json
+.kotlin/
