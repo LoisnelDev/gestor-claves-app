@@ -55,6 +55,7 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import com.loisnel.gestorclaves.ClipboardUtils
 
 // ═══════════════════════════════════════════════════════════
 // MODELO DE DATOS
@@ -94,13 +95,14 @@ private const val MASTER_PWD_KEY     = "master_password_enc"
 class MainActivity : FragmentActivity() {
 
     private val inactivityHandler = Handler(Looper.getMainLooper())
-    private val TIMEOUT_MS = 120_000L
+    private val TIMEOUT_MS = 90_000L
     private var esperandoBiometria = false
+    var onInactividadCallback: (() -> Unit)? = null
 
     private val inactivityRunnable = Runnable {
         if (!isFinishing && !isDestroyed) {
             mostrarNotificacionCierre()
-            finishAffinity()
+            onInactividadCallback?.invoke()
         }
     }
 
@@ -162,7 +164,9 @@ class MainActivity : FragmentActivity() {
         return super.dispatchTouchEvent(ev)
     }
     override fun onResume()  { super.onResume();  if (!esperandoBiometria) reiniciarTemporizador() }
-    override fun onPause()   { super.onPause();   if (!esperandoBiometria) pausarTemporizador() }
+    override fun onPause()   { super.onPause() }
+    // onPause ya NO cancela el temporizador de 120s: si la app queda
+    // huerfana en 2do plano, el re-bloqueo debe seguir contando igual.
     override fun onDestroy() { inactivityHandler.removeCallbacks(inactivityRunnable); super.onDestroy() }
 }
 
@@ -387,6 +391,13 @@ fun GestorApp(activityScope: CoroutineScope, activity: MainActivity, onSalir: ()
             cargando = true
             listaClaves = cargarClavesAsync(context)
             cargando = false
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        activity.onInactividadCallback = {
+            passwordMaster = ""
+            pantalla = Pantalla.LOGIN
         }
     }
 
@@ -905,10 +916,10 @@ fun PantallaEditor(activityScope: CoroutineScope, claveExistente: Clave?,
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 4.dp),
                 textAlign = TextAlign.Center)
             CampoEditor(stringResource(R.string.editor_label_sitio), sitio, modoEdicion,
-                { sitio = it }, { clipboard.setText(AnnotatedString(sitio)) },
+                { sitio = it }, { clipboard.setText(AnnotatedString(sitio)); ClipboardUtils.scheduleClear(context) },
                 { clipboard.getText()?.text?.let { sitio = it } })
             CampoEditor(stringResource(R.string.editor_label_usuario), usuario, modoEdicion,
-                { usuario = it }, { clipboard.setText(AnnotatedString(usuario)) },
+                { usuario = it }, { clipboard.setText(AnnotatedString(usuario)); ClipboardUtils.scheduleClear(context) },
                 { clipboard.getText()?.text?.let { usuario = it } })
             OutlinedTextField(value = password, onValueChange = { if (modoEdicion) password = it },
                 label = { Text(stringResource(R.string.editor_label_pass), color = Color.Gray) },
@@ -921,7 +932,7 @@ fun PantallaEditor(activityScope: CoroutineScope, claveExistente: Clave?,
                             Text(if (mostrarPassword) stringResource(R.string.editor_btn_ocultar)
                                  else stringResource(R.string.editor_btn_ver),
                                 color = Color(0xFF0066CC), fontSize = 12.sp) }
-                        if (!modoEdicion) TextButton(onClick = { clipboard.setText(AnnotatedString(password)) }) {
+                        if (!modoEdicion) TextButton(onClick = { clipboard.setText(AnnotatedString(password)); ClipboardUtils.scheduleClear(context) }) {
                             Text(stringResource(R.string.editor_btn_copiar),
                                 color = Color(0xFFCC7700), fontSize = 12.sp) }
                     }
@@ -946,7 +957,7 @@ fun PantallaEditor(activityScope: CoroutineScope, claveExistente: Clave?,
                             label = { Text("${stringResource(R.string.editor_label_extras_view)} (${i + 1})", color = Color.Gray) },
                             enabled = false, modifier = Modifier.fillMaxWidth(), colors = campoColores(),
                             trailingIcon = {
-                                TextButton(onClick = { clipboard.setText(AnnotatedString(linea)) }) {
+                                TextButton(onClick = { clipboard.setText(AnnotatedString(linea)); ClipboardUtils.scheduleClear(context) }) {
                                     Text(stringResource(R.string.editor_btn_copiar),
                                         color = Color(0xFFCC7700), fontSize = 12.sp) }
                             })
